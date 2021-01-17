@@ -1,0 +1,16 @@
+* {
+    padding: 0px;
+    margin: none;
+    overflow: hidden;
+}
+
+canvas {
+    width: 4000px;
+    height: 4000px;
+    margin-top: -2000px;
+    margin-left: -2000px;
+
+    position: fixed;
+    top: 50%;
+    left: 50%;
+}
