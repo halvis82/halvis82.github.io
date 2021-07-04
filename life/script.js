@@ -51,7 +51,7 @@ console.log("%cClick %c-> Toggle cell (can hold and drag)", "color: #FF00FF", "c
 console.log("%cSpace %c-> Pause", "color: #FF00FF", "color: #FFFFFF;")
 console.log("%cEscape %c-> Reset game", "color: #FF00FF", "color: #FFFFFF;")
 console.log("%cR %c-> Random pattern", "color: #FF00FF", "color: #FFFFFF;")
-console.log("%c1-3 %c-> Cool patterns", "color: #FF00FF", "color: #FFFFFF;")
+console.log("%c1-9 %c-> Cool patterns", "color: #FF00FF", "color: #FFFFFF;")
 console.log("%cPage up/down %c-> Change interval (ms)", "color: #FF00FF", "color: #FFFFFF;")
 
 // Commands
