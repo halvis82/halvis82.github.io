@@ -1282,7 +1282,7 @@
     var txt =
       'The International Space Station is at ' + Math.abs(iss.latitude).toFixed(1) + '° ' + ns +
       ', ' + Math.abs(iss.longitude).toFixed(1) + '° ' + ew + ' right now, ' +
-      Math.round(iss.altitude) + ' km up and travelling ' +
+      Math.round(iss.altitude) + ' km up and traveling ' +
       Math.round(iss.velocity).toLocaleString() + ' km/h. Everything behind it is where it ' +
       'actually is: the stars, the planets, the Moon’s phase, and the line between day and night.';
 

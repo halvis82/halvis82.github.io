@@ -476,6 +476,9 @@ main {
 
 @media (max-width: 860px) {
   .sig-band { display: none; }
+  /* The caption only describes the scene, so it goes wherever the scene goes.
+     Left on its own it reads as a claim about a picture that isn't there. */
+  .sig-note { display: none; }
   main { background: none; }
 }
 
