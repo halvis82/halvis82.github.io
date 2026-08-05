@@ -369,7 +369,10 @@ a {
 .facts > li { color: var(--text); }
 .facts span {
   display: inline-block;
-  min-width: 92px;
+  /* Wide enough for the longest label, so the values stay in one column
+     instead of the last row butting up against its own heading. */
+  min-width: 112px;
+  padding-right: .5rem;
   color: var(--muted);
   font-size: .78rem;
   letter-spacing: .04em;
