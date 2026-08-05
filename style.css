@@ -440,7 +440,9 @@ body.scene-drag, body.scene-drag * { cursor: grabbing !important; user-select: n
   height: 100%;
 }
 
-.site-header,
+/* Lift the content above the scene. The header is deliberately left out:
+   it is already position:sticky with its own z-index, and relative here
+   would win on source order and quietly unpin it. */
 main,
 .site-footer {
   position: relative;
