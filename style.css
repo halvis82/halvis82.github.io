@@ -271,6 +271,16 @@ a {
 
 /* ---------------------------- prose ----------------------------- */
 
+/* Light emphasis, not full bold. The paragraph is set in the muted color, so
+   lifting these to the body color does most of the work and the weight only
+   has to do the rest. 600 rather than a variable-font value like 570, because
+   the system stack snaps to discrete weights outside Safari and 570 rounds up
+   to a full 700. */
+.prose strong {
+  font-weight: 600;
+  color: var(--text);
+}
+
 .prose {
   max-width: var(--measure);
   display: grid;
@@ -369,9 +379,7 @@ a {
 .facts > li { color: var(--text); }
 .facts span {
   display: inline-block;
-  /* Wide enough for the longest label, so the values stay in one column
-     instead of the last row butting up against its own heading. */
-  min-width: 112px;
+  min-width: 92px;
   padding-right: .5rem;
   color: var(--muted);
   font-size: .78rem;
