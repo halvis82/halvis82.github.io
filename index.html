@@ -1,22 +1,273 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>halvis82</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Halvor Hafnor</title>
+<meta name="description" content="Halvor Hafnor. Embedded and applied ML engineer. BS/MS computer engineering at UC San Diego, embedded ML at Aerendir Mobile.">
+
+<meta property="og:title" content="Halvor Hafnor">
+<meta property="og:description" content="Embedded &amp; Applied ML Engineer. BS/MS computer engineering at UC San Diego.">
+<meta property="og:type" content="profile">
+<meta property="og:url" content="https://halvis82.github.io/">
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text x='50' y='50' font-family='-apple-system,Segoe UI,Helvetica,Arial,sans-serif' font-size='84' font-weight='650' fill='%232f6fd0' text-anchor='middle' dominant-baseline='central'>H</text></svg>">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>repo:</h1>
-    <ul>
-        <li><a href="./LineCatcher">Line Catcher</a></li>
-        <li><a href="./Snake">Snake</a></li>
-        <li><a href="./FourInARow">Four in a row</a></li>
-        <li><a href="./TicTacToe">TicTacToe</a></li>
-        <li><a href="./life">life</a></li>
-        <li><a href="./minesweeper">minesweeper</a></li>
-        <li><a href="./guessday">guessday</a></li>
-        <li><a href="./multitimers">multitimers</a></li>
-        <li><a href="./sisyphus">sisyphus</a></li>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <nav class="nav" aria-label="Primary">
+    <a class="mark" href="#top">Halvor Hafnor</a>
+
+    <div class="nav-links">
+      <a class="nav-section" href="#about">About</a>
+      <a class="nav-section" href="#experience">Experience</a>
+      <a class="nav-section" href="#education">Education</a>
+
+      <span class="nav-divider" aria-hidden="true"></span>
+
+      <a class="icon-link" href="https://github.com/halvis82" aria-label="GitHub" title="GitHub">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+      </a>
+      <a class="icon-link" href="https://www.linkedin.com/in/halvor-hafnor/" aria-label="LinkedIn" title="LinkedIn">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.63 13.63h-2.37V9.92c0-.89-.02-2.03-1.24-2.03-1.24 0-1.43.97-1.43 1.97v3.77H6.22V6h2.28v1.04h.03c.32-.6 1.09-1.24 2.25-1.24 2.4 0 2.85 1.58 2.85 3.64v4.19zM3.56 4.96a1.38 1.38 0 1 1 0-2.75 1.38 1.38 0 0 1 0 2.75zM4.75 13.63H2.37V6h2.38v7.63zM14.82 0H1.18C.53 0 0 .52 0 1.16v13.68C0 15.48.53 16 1.18 16h13.64c.65 0 1.18-.52 1.18-1.16V1.16C16 .52 15.47 0 14.82 0z"/></svg>
+      </a>
+
+      <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch color theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><g><path d="M12 2v2.6M12 19.4V22M4.2 4.2l1.9 1.9M17.9 17.9l1.9 1.9M2 12h2.6M19.4 12H22M4.2 19.8l1.9-1.9M17.9 6.1l1.9-1.9"/></g></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1z"/></svg>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<main id="main">
+
+  <section class="hero" id="top">
+    <p class="eyebrow">San Diego, California</p>
+    <h1>Halvor Hafnor</h1>
+    <p class="lede">
+      Embedded &amp; applied ML engineer. I build machine learning pipelines that
+      run on real hardware and real sensor data at
+      <a href="https://aermob.com/">Aerendir&nbsp;Mobile</a>,
+      alongside a BS/MS in computer engineering at UC&nbsp;San&nbsp;Diego.
+    </p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="https://www.linkedin.com/in/halvor-hafnor/">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.63 13.63h-2.37V9.92c0-.89-.02-2.03-1.24-2.03-1.24 0-1.43.97-1.43 1.97v3.77H6.22V6h2.28v1.04h.03c.32-.6 1.09-1.24 2.25-1.24 2.4 0 2.85 1.58 2.85 3.64v4.19zM3.56 4.96a1.38 1.38 0 1 1 0-2.75 1.38 1.38 0 0 1 0 2.75zM4.75 13.63H2.37V6h2.38v7.63zM14.82 0H1.18C.53 0 0 .52 0 1.16v13.68C0 15.48.53 16 1.18 16h13.64c.65 0 1.18-.52 1.18-1.16V1.16C16 .52 15.47 0 14.82 0z"/></svg>
+        LinkedIn
+      </a>
+      <a class="btn" href="https://github.com/halvis82">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub
+      </a>
+      <!-- TODO: confirm which address you want public. -->
+      <a class="btn" href="mailto:hhafnor@gmail.com">Email</a>
+    </div>
+  </section>
+
+  <section class="section" id="about" aria-labelledby="about-h">
+    <h2 id="about-h" class="section-title">About</h2>
+    <div class="prose">
+      <p>
+        I'm a computer engineering BS/MS student at UC San Diego working at the
+        intersection of embedded systems and applied machine learning. I'm
+        especially interested in how technical systems translate into practical
+        products, through clear requirements, usability considerations, and
+        cross-disciplinary communication.
+      </p>
+      <ul class="facts">
+        <li><span>Focus</span> Embedded ML, biometric sensing</li>
+        <li><span>Languages</span> English, Norwegian, Spanish</li>
+        <li><span>Honors</span> Tau Beta Pi</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section" id="experience" aria-labelledby="exp-h">
+    <h2 id="exp-h" class="section-title">Experience</h2>
+    <ol class="timeline">
+
+      <li>
+        <div class="tl-meta">
+          <span class="tl-date">Jul 2024 &ndash; present</span>
+          <span class="tl-place">Aerendir Mobile</span>
+          <span class="tl-where">Mountain View, CA</span>
+        </div>
+        <div class="tl-body">
+          <h3>Embedded ML Engineer</h3>
+          <ul class="bullets">
+            <li>Embedded machine learning pipelines for classifying biometric motion signals from inertial sensors.</li>
+            <li>Android applications for real-time biometric sensing, data streaming and workflow control.</li>
+            <li>C++ and QML software on Linux-based phones interfacing with sensors and ML inference components.</li>
+            <li>Prototyped automotive driver monitoring and security systems based on steering-wheel biometrics.</li>
+            <li>Named inventor on a pending patent application covering automotive biometrics and driver monitoring.</li>
+          </ul>
+        </div>
+      </li>
+
+      <li>
+        <div class="tl-meta">
+          <span class="tl-date">Jun 2021 &ndash; Sep 2023</span>
+          <span class="tl-place">ABB</span>
+          <span class="tl-where">Telemark, Norway</span>
+        </div>
+        <div class="tl-body">
+          <h3>Electrical Technician</h3>
+          <ul class="bullets">
+            <li>Three consecutive summer internships supporting electrical manufacturing and control system assembly for industrial clients.</li>
+            <li>Assembled and wired industrial control panels and power distribution cabinets from engineering schematics, with QA testing and fault debugging before delivery.</li>
+            <li>Mentored incoming interns and improved onboarding through shared best practices.</li>
+          </ul>
+        </div>
+      </li>
+
+      <li>
+        <div class="tl-meta">
+          <span class="tl-date">Jun 2019 &ndash; Aug 2020</span>
+          <span class="tl-place">Cathwell AS</span>
+          <span class="tl-where">Bamble, Norway</span>
+        </div>
+        <div class="tl-body">
+          <h3>Data Management Intern</h3>
+          <ul class="bullets">
+            <li>Migrated legacy technical data to updated digital systems, including cleaning, formatting and verification.</li>
+            <li>Organized documentation supporting internal engineering and operations.</li>
+          </ul>
+        </div>
+      </li>
+
+    </ol>
+  </section>
+
+  <section class="section" id="education" aria-labelledby="edu-h">
+    <h2 id="edu-h" class="section-title">Education</h2>
+    <ol class="timeline">
+
+      <li>
+        <div class="tl-meta">
+          <span class="tl-date">Jan 2026 &ndash; Jun 2027</span>
+          <span class="tl-place">UC San Diego</span>
+        </div>
+        <div class="tl-body">
+          <h3>MS, Computer Engineering</h3>
+          <p>Graduate coursework in computer engineering, with early work in natural language processing.</p>
+        </div>
+      </li>
+
+      <li>
+        <div class="tl-meta">
+          <span class="tl-date">Sep 2024 &ndash; Jun 2026</span>
+          <span class="tl-place">UC San Diego</span>
+        </div>
+        <div class="tl-body">
+          <h3>BS, Computer Engineering</h3>
+          <p class="tl-sub">3.9 / 4.0</p>
+          <ul class="bullets">
+            <li>Built an embedded perception system using YOLOv8 and stereo depth sensing (OAK-D) to detect people in real time and drive pan/tilt servos for automated target tracking on a Raspberry Pi platform.</li>
+            <li>Designed and assembled a tethered underwater ROV with five independently driven thrusters, waterproofed electronics and real-time video feedback for teleoperation.</li>
+          </ul>
+        </div>
+      </li>
+
+      <li>
+        <div class="tl-meta">
+          <span class="tl-date">Sep 2022 &ndash; Jun 2024</span>
+          <span class="tl-place">De Anza College</span>
+        </div>
+        <div class="tl-body">
+          <h3>Computer Science &amp; Engineering</h3>
+          <p class="tl-sub">4.0 / 4.0</p>
+        </div>
+      </li>
+
+    </ol>
+  </section>
+
+  <section class="section" id="interests" aria-labelledby="int-h">
+    <h2 id="int-h" class="section-title">Interests</h2>
+    <ul class="interests">
+      <li>
+        <h3>Applied machine learning</h3>
+        <p>Models that have to survive real, noisy input and limited hardware.</p>
+      </li>
+      <li>
+        <h3>Signal processing</h3>
+        <p>Turning raw inertial time series into features worth classifying.</p>
+      </li>
+      <li>
+        <h3>Embedded engineering</h3>
+        <p>Software that has to be careful about power, memory and timing.</p>
+      </li>
     </ul>
+  </section>
+
+  <p class="sig-note" id="sig-cap">Loading&hellip;</p>
+
+  <!-- Projects section. Commented out until there is something worth showing.
+       The .proj-list styles are still in style.css, so uncommenting this block
+       is all it takes to bring it back.
+
+  <section class="section" id="projects" aria-labelledby="projects-h">
+    <h2 id="projects-h" class="section-title">Projects</h2>
+    <ul class="proj-list">
+      <li>
+        <div class="proj-head">
+          <h3>project-name</h3>
+          <a href="#">Source</a>
+        </div>
+        <p>One line on what it does.</p>
+      </li>
+    </ul>
+  </section>
+
+  -->
+
+</main>
+
+<!-- Fixed background. Live sky, planets, Earth and ISS; see scene.js. -->
+<div class="sig-band" id="sig" aria-hidden="true"><canvas id="scene"></canvas></div>
+
+<footer class="site-footer">
+  <div class="foot-inner">
+    <p>Halvor Hafnor</p>
+    <ul class="foot-links">
+      <li><a href="https://www.linkedin.com/in/halvor-hafnor/">LinkedIn</a></li>
+      <li><a href="https://github.com/halvis82">GitHub</a></li>
+      <li><a href="mailto:hhafnor@gmail.com">Email</a></li>
+    </ul>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var KEY = 'theme';
+  var stored = null;
+  try { stored = localStorage.getItem(KEY); } catch (e) {}
+  if (stored === 'light' || stored === 'dark') root.setAttribute('data-theme', stored);
+
+  document.getElementById('theme-toggle').addEventListener('click', function () {
+    var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    var current = root.getAttribute('data-theme') || (prefersDark ? 'dark' : 'light');
+    var next = current === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem(KEY, next); } catch (e) {}
+    window.dispatchEvent(new CustomEvent('themechange'));
+  });
+
+  var header = document.querySelector('.site-header');
+  var onScroll = function () { header.classList.toggle('is-scrolled', window.scrollY > 8); };
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+})();
+</script>
+<script src="coast.js" defer></script>
+<script src="sky.js" defer></script>
+<script src="scene.js" defer></script>
+
 </body>
 </html>
