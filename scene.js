@@ -864,7 +864,8 @@
     gr = grBase;
   }
 
-  var ORANGE = '#e8843c';
+  var ORANGE = '#e8843c';   // wildfires
+  var RED    = '#e0483a';   // volcanoes, so the two are not just orange dots
   var AURORA = '#4fd6a0';
 
   // The auroral oval widens toward the equator as geomagnetic activity rises.
@@ -938,11 +939,11 @@
       p = projEarth(v.lat, v.lon, 1.002);
       if (!p || p[2] < 0.12) continue;
       var ph = (t * 0.55 + i * 0.4) % 1;
-      ctx.strokeStyle = rgba(ORANGE, 0.55 * (1 - ph));
+      ctx.strokeStyle = rgba(RED, 0.55 * (1 - ph));
       ctx.lineWidth = 1.1;
       ctx.beginPath(); ctx.arc(p[0], p[1], 3 + ph * 13, 0, Math.PI * 2); ctx.stroke();
       volcanoGlyph(p[0], p[1], 4.4, 1);
-      eventLabel(p, v.name, ORANGE, 8);
+      eventLabel(p, v.name, RED, 8);
     }
 
     // Cyclones: a turning spiral, and it turns the right way. Anticlockwise
@@ -983,9 +984,9 @@
     ctx.lineTo(x, y - r * 0.78);
     ctx.lineTo(x + r, y + r * 0.62);
     ctx.closePath();
-    ctx.fillStyle = rgba(ORANGE, 0.30 * a);
+    ctx.fillStyle = rgba(RED, 0.30 * a);
     ctx.fill();
-    ctx.strokeStyle = rgba(ORANGE, 0.95 * a);
+    ctx.strokeStyle = rgba(RED, 0.95 * a);
     ctx.lineWidth = 1.1;
     ctx.stroke();
   }
