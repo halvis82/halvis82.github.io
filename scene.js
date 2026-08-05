@@ -113,12 +113,21 @@
   var COASTLINES = decodeDelta(COAST, 10);
   var FIGURES    = decodeDelta(CLINES, 10);
 
+  // The fourth field indexes the appearance tables below. Everything a star
+  // looks like follows from its magnitude, which arrives in whole tenths, so
+  // the integer is all that is needed. Magnitude runs negative for the
+  // brightest stars, Sirius at -1.4, so the range is shifted to start at zero.
+  var MAG_MIN = 1e9, MAG_MAX = -1e9;
   var STARLIST = (function () {
     var raw = STARS.split(' '), out = [], i;
     for (i = 0; i < raw.length; i++) {
       var p = raw[i].split(',');
-      out.push([+p[0] / 10, +p[1] / 10, +p[2] / 10]);
+      var mi = +p[2];
+      if (mi < MAG_MIN) MAG_MIN = mi;
+      if (mi > MAG_MAX) MAG_MAX = mi;
+      out.push([+p[0] / 10, +p[1] / 10, mi / 10, mi]);
     }
+    for (i = 0; i < out.length; i++) out[i][3] -= MAG_MIN;
     return out;
   })();
 
@@ -217,6 +226,8 @@
     var dec = Math.atan2(v[2], Math.sqrt(v[0] * v[0] + v[1] * v[1])) * R2D;
     return [ra, dec];
   }
+
+  var frameBodies = [];
 
   function bodies(date) {
     var jd = julian(date);
@@ -547,13 +558,41 @@
     var a = document.documentElement.getAttribute('data-theme');
     col.dark = a ? a === 'dark'
                  : window.matchMedia('(prefers-color-scheme: dark)').matches;
+    buildStarTables();
   }
 
+  // A star's radius and shade follow from its magnitude and nothing else, and
+  // magnitude arrives quantized to a tenth. That is a few dozen distinct
+  // values against three thousand stars, so they are worked out once per
+  // theme rather than rebuilt on every star of every frame. The expressions
+  // are exactly the ones that used to sit inside the two star loops.
+  var STAR_R_SKY = [], STAR_R_LOC = [], STAR_FILL_SKY = [], STAR_FILL_PLAIN = [];
+  function buildStarTables() {
+    for (var k = 0; k <= MAG_MAX - MAG_MIN; k++) {
+      var m = (k + MAG_MIN) / 10;
+      var a = Math.max(0.22, Math.min(1, (5.6 - m) / 4.6));
+      STAR_R_SKY[k]      = Math.max(0.45, (5.0 - m) * 0.50);
+      STAR_R_LOC[k]      = Math.max(0.45, (5.0 - m) * 0.46);
+      STAR_FILL_SKY[k]   = rgba(col.ink, a * (col.dark ? 1 : 0.7));
+      STAR_FILL_PLAIN[k] = rgba(col.ink, a);
+    }
+  }
+
+  // The hex is one of a handful of theme colors, but the alpha changes
+  // constantly, so only the channel parse is worth keeping. Caching on the
+  // hex alone keeps this bounded at a few entries no matter how many alphas
+  // pass through. Output is byte for byte what it always was.
+  var rgbCache = {};
   function rgba(hex, a) {
-    var h = hex.replace('#', '');
-    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
-    var n = parseInt(h, 16);
-    return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')';
+    var c = rgbCache[hex];
+    if (c === undefined) {
+      var h = hex.replace('#', '');
+      if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+      var n = parseInt(h, 16);
+      c = ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',';
+      rgbCache[hex] = c;
+    }
+    return 'rgba(' + c + a + ')';
   }
 
   var MONO = 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace';
@@ -580,22 +619,20 @@
       var p = projSky(s[0], s[1]);
       if (!p) continue;
       if (p[0] < -20 || p[0] > W + 20 || p[1] < -20 || p[1] > H + 20) continue;
-      var m = s[2];
-      var r = Math.max(0.45, (5.0 - m) * 0.50);
-      var a = Math.max(0.22, Math.min(1, (5.6 - m) / 4.6));
-      ctx.fillStyle = rgba(col.ink, a * (col.dark ? 1 : 0.7));
+      var mi = s[3];
+      ctx.fillStyle = STAR_FILL_SKY[mi];
       // A faint halo on the brightest handful, so they read as stars
       // rather than as evenly sized dots
-      if (m < 1.6) {
+      if (s[2] < 1.6) {
         var hg = ctx.createRadialGradient(p[0], p[1], 0, p[0], p[1], 7);
         hg.addColorStop(0, rgba(col.ink, 0.30));
         hg.addColorStop(1, rgba(col.ink, 0));
         ctx.fillStyle = hg;
         ctx.beginPath(); ctx.arc(p[0], p[1], 7, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = rgba(col.ink, a);
+        ctx.fillStyle = STAR_FILL_PLAIN[mi];
       }
       ctx.beginPath();
-      ctx.arc(p[0], p[1], r, 0, Math.PI * 2);
+      ctx.arc(p[0], p[1], STAR_R_SKY[mi], 0, Math.PI * 2);
       ctx.fill();
     }
   }
@@ -614,7 +651,7 @@
   }
 
   function drawBodies(now, t) {
-    var list = bodies(now);
+    var list = frameBodies;
     for (var i = 0; i < list.length; i++) {
       var b = list[i];
       var p = projSky(b.ra, b.dec);
@@ -710,14 +747,14 @@
       p = projLocal(st[0], st[1]);
       if (!p) continue;
       if (p[0] < lx - r || p[0] > lx + r || p[1] < ly - r || p[1] > ly + r) continue;
-      var m = st[2];
-      ctx.fillStyle = rgba(col.ink, Math.max(0.22, Math.min(1, (5.6 - m) / 4.6)));
+      var mi = st[3];
+      ctx.fillStyle = STAR_FILL_PLAIN[mi];
       ctx.beginPath();
-      ctx.arc(p[0], p[1], Math.max(0.45, (5.0 - m) * 0.46), 0, Math.PI * 2);
+      ctx.arc(p[0], p[1], STAR_R_LOC[mi], 0, Math.PI * 2);
       ctx.fill();
     }
 
-    var list = bodies(new Date());
+    var list = frameBodies;
     for (i = 0; i < list.length; i++) {
       var bd = list[i];
       p = projLocal(bd.ra, bd.dec);
@@ -1145,6 +1182,10 @@
     ctx.clearRect(0, 0, W, H);
 
     var now = new Date();
+    // Sun, Moon and planets, solved once and shared by the sky and the
+    // porthole. Both used to work the whole set out for themselves, a few
+    // milliseconds apart, and got the same answer twice.
+    frameBodies = bodies(now);
 
     // Scrolling nudges the whole scene upward. Pure translation, no change of
     // angle, so it reads as the viewpoint rising rather than the camera
