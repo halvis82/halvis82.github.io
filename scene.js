@@ -1279,12 +1279,26 @@
     }
     var ns = iss.latitude >= 0 ? 'N' : 'S';
     var ew = iss.longitude >= 0 ? 'E' : 'W';
-    capEl.textContent =
+    var txt =
       'The International Space Station is at ' + Math.abs(iss.latitude).toFixed(1) + '° ' + ns +
       ', ' + Math.abs(iss.longitude).toFixed(1) + '° ' + ew + ' right now, ' +
       Math.round(iss.altitude) + ' km up and travelling ' +
       Math.round(iss.velocity).toLocaleString() + ' km/h. Everything behind it is where it ' +
       'actually is: the stars, the planets, the Moon’s phase, and the line between day and night.';
+
+    // One short sentence naming the marks, covering only what is actually on
+    // screen. Claiming live volcanoes while that feed is down would be worse
+    // than saying nothing at all.
+    var marks = [];
+    if (events.fires.length)     marks.push('Orange marks wildfires');
+    if (events.volcanoes.length) marks.push('red marks volcanoes');
+    if (events.storms.length)    marks.push('spirals are cyclones');
+    if (marks.length) {
+      txt += ' ' + marks.join(', ') + ', all live and drawn where and when they are happening.';
+    }
+    if (kp !== null && kp >= 3.6) txt += ' The green band is tonight’s aurora.';
+    if (you) txt += ' The green dot is roughly you.';
+    capEl.textContent = txt;
   }
 
   function start() { if (running) return; running = true; t0 = 0; raf = requestAnimationFrame(frame); }
