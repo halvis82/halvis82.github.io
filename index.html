@@ -187,6 +187,25 @@
 
       <li>
         <div class="proj-head">
+          <h3>TabTerm</h3>
+        </div>
+        <p class="proj-at">Personal project</p>
+        <p>
+          A macOS terminal where every session is an ordinary Chrome tab. A
+          background daemon owns the shell processes and Chrome owns only the
+          views, so closing a tab kills nothing. Reopen it and the process is
+          still running with the screen exactly as you left it, down to a vim
+          buffer with unsaved changes, because the daemon keeps its own headless
+          copy of the terminal state. Since terminals sit at stable extension
+          URLs, Chrome's tab machinery works on them for free, so they reorder,
+          pin, group and reopen from history like anything else. Around 55,000
+          lines of TypeScript across the daemon and the extension, talking over
+          an authenticated loopback socket, with 514 tests behind it.
+        </p>
+      </li>
+
+      <li>
+        <div class="proj-head">
           <h3>A 400-person biometric motion dataset</h3>
         </div>
         <p class="proj-at">Aerendir Mobile</p>
