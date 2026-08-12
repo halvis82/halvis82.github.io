@@ -6,11 +6,16 @@
 <title>Halvor Hafnor</title>
 <meta name="description" content="Halvor Hafnor. Embedded and applied ML engineer. MS computer engineering at UC San Diego, embedded ML at Aerendir Mobile.">
 
+<!-- The same site is served from GitHub Pages and from Vercel. Vercel is the
+     one that carries my name, so it is the address search engines and shared
+     links should settle on. -->
+<link rel="canonical" href="https://halvorhafnor.vercel.app/">
+
 <meta property="og:title" content="Halvor Hafnor">
 <meta property="og:description" content="Embedded &amp; Applied ML Engineer. MS computer engineering at UC San Diego.">
 <meta property="og:type" content="profile">
-<meta property="og:url" content="https://halvis82.github.io/">
-<meta property="og:image" content="https://halvis82.github.io/img/og.jpg">
+<meta property="og:url" content="https://halvorhafnor.vercel.app/">
+<meta property="og:image" content="https://halvorhafnor.vercel.app/img/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Halvor Hafnor, with the live sky and Earth the page draws behind it.">
@@ -202,16 +207,17 @@
           </div>
           <p class="proj-at">Personal project</p>
           <p>
-            A macOS terminal where every session is an ordinary Chrome tab. A
-            background daemon owns the shell processes and Chrome owns only the
-            views, so closing a tab kills nothing. Reopen it and the process is
-            still running with the screen exactly as you left it, down to a vim
-            buffer with unsaved changes, because the daemon keeps its own headless
-            copy of the terminal state. Since terminals sit at stable extension
-            URLs, Chrome's tab machinery works on them for free, so they reorder,
-            pin, group and reopen from history like anything else. Around 55,000
-            lines of TypeScript across the daemon and the extension, talking over
-            an authenticated loopback socket, with 514 tests behind it.
+            A macOS terminal built as a Chrome extension over a background
+            daemon. The daemon owns the shell processes, the extension owns the
+            views, and the result is that every terminal is an ordinary Chrome
+            tab. All of Chrome's tab machinery then applies to terminals for
+            free: keyboard shortcuts, groups, pinning, moving between windows,
+            reopening from history. That shape also leaves room for things a
+            terminal window has nowhere to put, so there is a command launcher,
+            search across everything you have ever run, saved commands scoped to
+            the project you are in, workspace templates, splits, and a live view
+            of the local servers you have going. Processes outliving their tabs
+            falls out of the daemon owning them, rather than being the point.
           </p>
         </div>
         <div class="proj-shot proj-shot-empty" aria-hidden="true"></div>
