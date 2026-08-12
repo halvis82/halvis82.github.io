@@ -1346,28 +1346,59 @@
   function stop()  { running = false; cancelAnimationFrame(raf); }
   function updateRunning() {
     if (reduceMotion.matches) return;
-    if (!document.hidden) start(); else stop();
+    if (!document.hidden && shown.matches) start(); else stop();
+  }
+
+  // Below this width the stylesheet hides the whole scene. Matching the same
+  // breakpoint here means a phone does not spend its battery and its data
+  // animating a canvas nobody can see, or polling five feeds to fill it. The
+  // number is duplicated from style.css on purpose: a media query is the one
+  // thing both sides can agree on without the stylesheet exporting anything.
+  var shown = window.matchMedia('(min-width: 861px)');
+
+  var timers = [];
+  function every(fn, ms) { timers.push(setInterval(fn, ms)); }
+
+  // Everything that costs network or battery lives here, so that turning the
+  // scene off is one call rather than a list of things to remember.
+  function startFeeds() {
+    if (timers.length) return;
+    locateVisitor();
+    loadEvents();    every(loadEvents, 900000);
+    loadVolcanoes(); every(loadVolcanoes, 3600000);
+    loadKp();        every(loadKp, 600000);
+    // A quick second reading so the direction is settled within a couple of
+    // seconds rather than after a full refresh interval
+    timers.push(setTimeout(load, 1400));
+    timers.push(setTimeout(load, 3000));
+    timers.push(setTimeout(load, 5200));
+    load().then(function () {
+      resize();
+      if (reduceMotion.matches) { draw(1); return; }
+      updateRunning();
+    });
+    every(load, REFRESH);
+  }
+
+  function stopFeeds() {
+    for (var i = 0; i < timers.length; i++) { clearInterval(timers[i]); clearTimeout(timers[i]); }
+    timers.length = 0;
+  }
+
+  function updateScene() {
+    if (shown.matches) { startFeeds(); updateRunning(); }
+    else { stop(); stopFeeds(); }
   }
 
   function init() {
     readTheme();
     resize();
     setCaption();
-    locateVisitor();
-    loadEvents();     setInterval(loadEvents, 900000);
-    loadVolcanoes(); setInterval(loadVolcanoes, 3600000);
-    loadKp();      setInterval(loadKp, 600000);
-    // A quick second reading so the direction is settled within a couple of
-    // seconds rather than after a full refresh interval
-    setTimeout(load, 1400);
-    setTimeout(load, 3000);
-    setTimeout(load, 5200);
-    load().then(function () {
-      resize();
-      if (reduceMotion.matches) { draw(1); return; }
-      updateRunning();
-    });
-    setInterval(load, REFRESH);
+    updateScene();
+    // Rotating a phone or dragging a window across the breakpoint starts or
+    // stops the whole thing, rather than leaving it half alive.
+    if (shown.addEventListener) shown.addEventListener('change', updateScene);
+    else if (shown.addListener) shown.addListener(updateScene);
   }
 
   // Drag to look around. The sky and the globe share one rotation, so the
