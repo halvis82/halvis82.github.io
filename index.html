@@ -191,29 +191,30 @@
             subject of the pending patent application I am named on.
           </p>
         </div>
-        <img class="proj-shot" src="img/aerwheel.webp" width="800" height="600"
-             loading="lazy" decoding="async"
-             alt="A Tesla steering wheel held open, its front trim removed to show the
-                  hub and the sensor fitted inside. Photograph by Aerendir Mobile.">
+        <div class="proj-shot proj-shot-empty" aria-hidden="true"></div>
       </li>
 
-      <li>
-        <div class="proj-head">
-          <h3>TabTerm</h3>
+      <li class="has-shot">
+        <div class="proj-main">
+          <div class="proj-head">
+            <h3>TabTerm</h3>
+            <a href="https://github.com/halvis82/TabTerm">Source</a>
+          </div>
+          <p class="proj-at">Personal project</p>
+          <p>
+            A macOS terminal where every session is an ordinary Chrome tab. A
+            background daemon owns the shell processes and Chrome owns only the
+            views, so closing a tab kills nothing. Reopen it and the process is
+            still running with the screen exactly as you left it, down to a vim
+            buffer with unsaved changes, because the daemon keeps its own headless
+            copy of the terminal state. Since terminals sit at stable extension
+            URLs, Chrome's tab machinery works on them for free, so they reorder,
+            pin, group and reopen from history like anything else. Around 55,000
+            lines of TypeScript across the daemon and the extension, talking over
+            an authenticated loopback socket, with 514 tests behind it.
+          </p>
         </div>
-        <p class="proj-at">Personal project</p>
-        <p>
-          A macOS terminal where every session is an ordinary Chrome tab. A
-          background daemon owns the shell processes and Chrome owns only the
-          views, so closing a tab kills nothing. Reopen it and the process is
-          still running with the screen exactly as you left it, down to a vim
-          buffer with unsaved changes, because the daemon keeps its own headless
-          copy of the terminal state. Since terminals sit at stable extension
-          URLs, Chrome's tab machinery works on them for free, so they reorder,
-          pin, group and reopen from history like anything else. Around 55,000
-          lines of TypeScript across the daemon and the extension, talking over
-          an authenticated loopback socket, with 514 tests behind it.
-        </p>
+        <div class="proj-shot proj-shot-empty" aria-hidden="true"></div>
       </li>
 
       <li>
