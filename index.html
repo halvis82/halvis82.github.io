@@ -25,6 +25,7 @@
     <div class="nav-links">
       <a class="nav-section" href="#about">About</a>
       <a class="nav-section" href="#experience">Experience</a>
+      <a class="nav-section" href="#projects">Projects</a>
       <a class="nav-section" href="#education">Education</a>
 
       <span class="nav-divider" aria-hidden="true"></span>
@@ -106,7 +107,6 @@
             <li>Embedded machine learning pipelines for classifying biometric motion signals from inertial sensors.</li>
             <li>Android applications for real-time biometric sensing, data streaming and workflow control.</li>
             <li>C++ and QML software on Linux-based phones interfacing with sensors and ML inference components.</li>
-            <li>Prototyped automotive driver monitoring and security systems based on steering-wheel biometrics.</li>
             <li>Named inventor on a pending patent application covering automotive biometrics and driver monitoring.</li>
           </ul>
         </div>
@@ -161,6 +161,73 @@
       </li>
 
     </ol>
+  </section>
+
+  <section class="section" id="projects" aria-labelledby="projects-h">
+    <h2 id="projects-h" class="section-title">Projects</h2>
+    <ul class="proj-list">
+
+      <li>
+        <div class="proj-head">
+          <h3>Hands on the wheel, from vibration alone</h3>
+          <a href="https://aermob.com/solutions/aerwheel/">AerWheel</a>
+        </div>
+        <p class="proj-at">Aerendir Mobile</p>
+        <p>
+          Fitted a Tesla steering wheel with a six-axis IMU driven by an ST
+          microcontroller, then trained a model to read the micro-vibrations of a
+          driver's grip closely enough to tell whether their hands were on the
+          wheel, reported live on an indicator light. No camera, and nothing the
+          driver has to do deliberately. Built with one other engineer. The work
+          became Aerendir's AerWheel, and it is the subject of the pending patent
+          application I am named on.
+        </p>
+      </li>
+
+      <li>
+        <div class="proj-head">
+          <h3>A 400-person biometric motion dataset</h3>
+        </div>
+        <p class="proj-at">Aerendir Mobile</p>
+        <p>
+          Aerendir identifies a person from the micro-vibrations their own body
+          produces while they hold a device, which means the models have to have
+          seen a great many bodies doing ordinary things. I ran that collection.
+          400 participants, each recorded sitting, standing and walking with the
+          phone in hand, giving roughly 40 hours of accelerometer and gyroscope
+          data that I then classified for training. The variety is the point,
+          because a model that only recognizes you sitting perfectly still is no
+          use in a pocket.
+        </p>
+      </li>
+
+      <li>
+        <div class="proj-head">
+          <h3>Real-time perception and tracking</h3>
+        </div>
+        <p class="proj-at">UC San Diego, ECE 148</p>
+        <p>
+          A Raspberry Pi running YOLOv8 against an OAK-D stereo depth camera,
+          driving pan and tilt servos to keep a detected person centered in frame
+          as they moved. Detection, depth and control all ran on the vehicle
+          itself, inside what the Pi could carry.
+        </p>
+      </li>
+
+      <li>
+        <div class="proj-head">
+          <h3>Tethered underwater ROV</h3>
+        </div>
+        <p class="proj-at">UC San Diego</p>
+        <p>
+          A teleoperated submersible with five independently driven thrusters,
+          waterproofed electronics and a live video feed for piloting. I led the
+          build, soldering and assembling the electronics and putting the vehicle
+          together, and wrote much of the software that drove it. Team project.
+        </p>
+      </li>
+
+    </ul>
   </section>
 
   <section class="section" id="education" aria-labelledby="edu-h">
@@ -226,25 +293,6 @@
   </section>
 
   <p class="sig-note" id="sig-cap">Loading&hellip;</p>
-
-  <!-- Projects section. Commented out until there is something worth showing.
-       The .proj-list styles are still in style.css, so uncommenting this block
-       is all it takes to bring it back.
-
-  <section class="section" id="projects" aria-labelledby="projects-h">
-    <h2 id="projects-h" class="section-title">Projects</h2>
-    <ul class="proj-list">
-      <li>
-        <div class="proj-head">
-          <h3>project-name</h3>
-          <a href="#">Source</a>
-        </div>
-        <p>One line on what it does.</p>
-      </li>
-    </ul>
-  </section>
-
-  -->
 
 </main>
 

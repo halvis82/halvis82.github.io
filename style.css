@@ -499,6 +499,13 @@ main {
 .proj-head a { font-size: .87rem; font-weight: 550; text-decoration: none; }
 .proj-head a:hover { text-decoration: underline; }
 .proj-list p { color: var(--muted); font-size: .95rem; max-width: var(--measure); }
+/* Where the work was done. Matches the timeline's place line, so a project
+   and a job read as the same kind of fact. */
+.proj-at {
+  font-size: .82rem;
+  color: var(--muted);
+  margin: -.2rem 0 .35rem;
+}
 
 /* ---------------------------- footer ---------------------------- */
 
