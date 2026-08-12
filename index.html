@@ -202,16 +202,21 @@
 
       <li>
         <div class="proj-head">
-          <h3>Self-driving car, and a person-tracking add-on</h3>
+          <h3>Self-driving car, and a laser that follows you</h3>
+          <a href="https://github.com/UCSD-Silberman-Classes-and-Projects/fall-2025-final-project-team-15">Source</a>
         </div>
         <p class="proj-at">UC San Diego, ECE 148</p>
         <p>
-          Built a small autonomous car on a Raspberry Pi, wiring the drive,
+          Built a small autonomous car on a Raspberry Pi 5, wiring the drive,
           sensing and compute together and getting them to work as one vehicle.
-          On top of the course work we added a perception project of our own,
-          using YOLOv8 with an OAK-D stereo camera to detect a person and recover
-          their distance, then driving pan and tilt servos to keep them centered
-          in frame as they moved.
+          On top of the course work we added a laser targeting system of our own.
+          YOLOv8 finds the people in frame, an OAK-D stereo camera puts a distance
+          on each of them, and the nearest one is turned from a pixel position
+          into pan and tilt angles through the camera's field of view, so two
+          servos hold a laser pointer on that person while they move. Depth is
+          sampled as the median of a small patch rather than a single pixel, since
+          one bad reading is enough to throw the aim off. It streams what the
+          camera sees to a browser while it tracks.
         </p>
       </li>
 
