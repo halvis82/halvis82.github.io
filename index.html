@@ -219,40 +219,53 @@
         </p>
       </li>
 
-      <li>
-        <div class="proj-head">
-          <h3>Self-driving car, and a laser that follows you</h3>
-          <a href="https://github.com/UCSD-Silberman-Classes-and-Projects/fall-2025-final-project-team-15">Source</a>
+      <li class="has-shot">
+        <div class="proj-main">
+          <div class="proj-head">
+            <h3>Self-driving car, and a laser that follows you</h3>
+            <a href="https://github.com/UCSD-Silberman-Classes-and-Projects/fall-2025-final-project-team-15">Source</a>
+          </div>
+          <p class="proj-at">UC San Diego, ECE 148</p>
+          <p>
+            Built a small autonomous car on a Raspberry Pi 5, wiring the drive,
+            sensing and compute together and getting them to work as one vehicle.
+            On top of the course work we added a laser targeting system of our own.
+            YOLOv8 finds the people in frame, an OAK-D stereo camera puts a distance
+            on each of them, and the nearest one is turned from a pixel position
+            into pan and tilt angles through the camera's field of view, so two
+            servos hold a laser pointer on that person while they move. Depth is
+            sampled as the median of a small patch rather than a single pixel, since
+            one bad reading is enough to throw the aim off. It streams what the
+            camera sees to a browser while it tracks.
+          </p>
         </div>
-        <p class="proj-at">UC San Diego, ECE 148</p>
-        <p>
-          Built a small autonomous car on a Raspberry Pi 5, wiring the drive,
-          sensing and compute together and getting them to work as one vehicle.
-          On top of the course work we added a laser targeting system of our own.
-          YOLOv8 finds the people in frame, an OAK-D stereo camera puts a distance
-          on each of them, and the nearest one is turned from a pixel position
-          into pan and tilt angles through the camera's field of view, so two
-          servos hold a laser pointer on that person while they move. Depth is
-          sampled as the median of a small patch rather than a single pixel, since
-          one bad reading is enough to throw the aim off. It streams what the
-          camera sees to a browser while it tracks.
-        </p>
+        <img class="proj-shot" src="img/laser-tracking.webp" width="797" height="600"
+             loading="lazy" decoding="async"
+             alt="The tracking view in a browser. A green box marks the nearest person,
+                  with their distance and the pan and tilt angles the servos are holding
+                  printed over the frame.">
       </li>
 
-      <li>
-        <div class="proj-head">
-          <h3>Tryton, a subsea ROV</h3>
-          <a href="https://halvis82.github.io/tryton/">Project page</a>
+      <li class="has-shot">
+        <div class="proj-main">
+          <div class="proj-head">
+            <h3>Tryton, a subsea ROV</h3>
+            <a href="https://halvis82.github.io/tryton/">Project page</a>
+          </div>
+          <p class="proj-at">UC San Diego</p>
+          <p>
+            A modular, low cost underwater ROV with a 3D printed frame inside an
+            acrylic pressure tube, driven by five thrusters and flown from a USB
+            game controller with live video coming back over Ethernet from a
+            Raspberry Pi camera. A Pixhawk running ArduPilot holds position using a
+            depth sensor and an IMU. I did the electrical side, sensor wiring, the
+            LiPo power system and ESC integration. Team of three.
+          </p>
         </div>
-        <p class="proj-at">UC San Diego</p>
-        <p>
-          A modular, low cost underwater ROV with a 3D printed frame inside an
-          acrylic pressure tube, driven by five thrusters and flown from a USB
-          game controller with live video coming back over Ethernet from a
-          Raspberry Pi camera. A Pixhawk running ArduPilot holds position using a
-          depth sensor and an IMU. I did the electrical side, sensor wiring, the
-          LiPo power system and ESC integration. Team of three.
-        </p>
+        <img class="proj-shot" src="img/tryton.webp" width="800" height="600"
+             loading="lazy" decoding="async"
+             alt="The Tryton hull in one hand. A 3D printed black body with red fittings,
+                  open thruster nacelles and a clear acrylic tube holding the camera.">
       </li>
 
     </ul>

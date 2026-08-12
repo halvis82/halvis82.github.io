@@ -499,6 +499,40 @@ main {
 .proj-head a { font-size: .87rem; font-weight: 550; text-decoration: none; }
 .proj-head a:hover { text-decoration: underline; }
 .proj-list p { color: var(--muted); font-size: .95rem; max-width: var(--measure); }
+/* A project with a picture puts it in a second column, spanning however many
+   rows the text happens to take. Only entries carrying .has-shot become grids,
+   so a project without a picture is untouched rather than left with a gap
+   where one should be. */
+.proj-list > li.has-shot {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 210px;
+  column-gap: 1.6rem;
+  align-items: start;
+}
+.proj-shot {
+  width: 100%;
+  height: auto;
+  border-radius: .5rem;
+  border: 1px solid var(--border);
+  /* Sitting slightly back from full strength keeps a photograph from shouting
+     on a page that is otherwise line art and type. */
+  opacity: .9;
+  transition: opacity .18s ease;
+}
+.proj-shot:hover { opacity: 1; }
+
+/* Both halves of the theme rule, same shape as the palette above: the system
+   preference unless the toggle has overridden it, and the explicit choice. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .proj-shot { filter: brightness(.85); }
+}
+:root[data-theme="dark"] .proj-shot { filter: brightness(.85); }
+
+@media (max-width: 700px) {
+  .proj-list > li.has-shot { grid-template-columns: 1fr; }
+  .proj-list > li.has-shot > .proj-shot { margin-top: .7rem; max-width: 320px; }
+}
+
 /* Where the work was done. Matches the timeline's place line, so a project
    and a job read as the same kind of fact. */
 .proj-at {
