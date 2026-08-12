@@ -169,18 +169,19 @@
 
       <li>
         <div class="proj-head">
-          <h3>Hands on the wheel, from vibration alone</h3>
+          <h3>Vibration-based hands on the wheel classifier</h3>
           <a href="https://aermob.com/solutions/aerwheel/">AerWheel</a>
         </div>
         <p class="proj-at">Aerendir Mobile</p>
         <p>
-          Fitted a Tesla steering wheel with a six-axis IMU driven by an ST
-          microcontroller, then trained a model to read the micro-vibrations of a
-          driver's grip closely enough to tell whether their hands were on the
-          wheel, reported live on an indicator light. No camera, and nothing the
-          driver has to do deliberately. Built with one other engineer. The work
-          became Aerendir's AerWheel, and it is the subject of the pending patent
-          application I am named on.
+          Fitted a Tesla steering wheel with an STMicroelectronics LSM6DSV16X
+          six-axis IMU and trained a model to tell from the micro-vibrations of a
+          driver's grip whether their hands were on the wheel, reported live on an
+          indicator light. The model runs in the sensor's own firmware, so there
+          is no camera, no separate processor and nothing the driver has to do
+          deliberately. Better than 99% accuracy at under 0.5% false positives,
+          answering within 1.5 seconds. Built with one other engineer, and the
+          subject of the pending patent application I am named on.
         </p>
       </li>
 
@@ -190,27 +191,27 @@
         </div>
         <p class="proj-at">Aerendir Mobile</p>
         <p>
-          Aerendir identifies a person from the micro-vibrations their own body
-          produces while they hold a device, which means the models have to have
-          seen a great many bodies doing ordinary things. I ran that collection.
-          400 participants, each recorded sitting, standing and walking with the
-          phone in hand, giving roughly 40 hours of accelerometer and gyroscope
-          data that I then classified for training. The variety is the point,
-          because a model that only recognizes you sitting perfectly still is no
-          use in a pocket.
+          Collected and classified the motion dataset behind Aerendir's biometric
+          authentication work. 400 participants, each recorded sitting, standing
+          and walking with the phone in hand, giving roughly 40 hours of
+          accelerometer and gyroscope data. The variety is the point, because a
+          model that only recognizes you sitting perfectly still is no use in a
+          pocket.
         </p>
       </li>
 
       <li>
         <div class="proj-head">
-          <h3>Real-time perception and tracking</h3>
+          <h3>Self-driving car, and a person-tracking add-on</h3>
         </div>
         <p class="proj-at">UC San Diego, ECE 148</p>
         <p>
-          A Raspberry Pi running YOLOv8 against an OAK-D stereo depth camera,
-          driving pan and tilt servos to keep a detected person centered in frame
-          as they moved. Detection, depth and control all ran on the vehicle
-          itself, inside what the Pi could carry.
+          Built a small autonomous car on a Raspberry Pi, wiring the drive,
+          sensing and compute together and getting them to work as one vehicle.
+          On top of the course work we added a perception project of our own,
+          using YOLOv8 with an OAK-D stereo camera to detect a person and recover
+          their distance, then driving pan and tilt servos to keep them centered
+          in frame as they moved.
         </p>
       </li>
 
@@ -221,9 +222,9 @@
         <p class="proj-at">UC San Diego</p>
         <p>
           A teleoperated submersible with five independently driven thrusters,
-          waterproofed electronics and a live video feed for piloting. I led the
-          build, soldering and assembling the electronics and putting the vehicle
-          together, and wrote much of the software that drove it. Team project.
+          waterproofed electronics and a live video feed for piloting. I soldered
+          and assembled the electronics, helped put the vehicle together, and
+          worked on the software that drove it. Team project.
         </p>
       </li>
 
