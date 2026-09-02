@@ -116,7 +116,7 @@
         <div class="tl-body">
           <h3>Embedded ML Engineer</h3>
           <ul class="bullets">
-            <li>Embedded machine learning pipelines for classifying biometric motion signals from inertial sensors.</li>
+            <li>Robustness work on the classifiers behind A-Live, the anti-bot liveness check, measuring what each added defense is worth rather than assuming.</li>
             <li>Android applications for real-time biometric sensing, data streaming and workflow control.</li>
             <li>C++ and QML software on Linux-based phones interfacing with sensors and ML inference components.</li>
             <li>Named inventor on a pending patent application covering automotive biometrics and driver monitoring.</li>
@@ -188,13 +188,15 @@
           <p class="proj-at">Aerendir Mobile</p>
           <p>
             Fitted a Tesla steering wheel with an STMicroelectronics LSM6DSV16X
-            six-axis IMU and trained a model to tell from the micro-vibrations of a
-            driver's grip whether their hands were on the wheel, reported live on an
-            indicator light. The model runs in the sensor's own firmware, so there
-            is no camera, no separate processor and nothing the driver has to do
-            deliberately. Better than 99% accuracy at under 0.5% false positives,
-            answering within 1.5 seconds. Built with one other engineer, and the
-            subject of the pending patent application I am named on.
+            six-axis IMU sampling at 240 Hz, and trained decision-tree classifiers in
+            scikit-learn to tell from the micro-vibrations of a driver's grip whether
+            their hands were on the wheel, reported live on an indicator light. It ran
+            first through ST's own on-sensor Machine Learning Core, then as an external
+            tree in the sensor's firmware, so there is no camera, no separate processor
+            and nothing the driver has to do deliberately. Better than 99% accuracy at
+            under 0.5% false positives, answering within 1.5 seconds. Built with one
+            other engineer, and the subject of the pending patent application I am
+            named on.
           </p>
         </div>
         <div class="proj-shot proj-shot-empty" aria-hidden="true"></div>
@@ -235,6 +237,24 @@
           three postures, sitting, standing and walking, from the accelerometer and
           gyroscope. The variety is the point, because a model that only recognizes
           you sitting perfectly still is no use in a pocket.
+        </p>
+      </li>
+
+      <li>
+        <div class="proj-head">
+          <h3>How much is a defense actually worth</h3>
+          <a href="https://aermob.com/solutions/a-live/">A-Live</a>
+        </div>
+        <p class="proj-at">Aerendir Mobile</p>
+        <p>
+          A-Live decides whether a living human is holding a phone, reading the faint
+          micro-vibrations of a hand from the accelerometer and gyroscope already in
+          the device, with no camera and nothing for the person to do. I built a lab
+          that puts those classifiers under adversarial input and then adds one
+          defense at a time, so each layer can be priced rather than assumed. The
+          useful output is not a verdict on the model, it is a number against every
+          defense: this one is worth a great deal, that one is worth almost nothing.
+          A defense you cannot price is a defense you cannot make a decision about.
         </p>
       </li>
 
