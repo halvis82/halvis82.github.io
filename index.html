@@ -118,7 +118,7 @@
           <h3>Embedded Software and ML Engineer</h3>
           <ul class="bullets">
             <li>Trained classifiers in scikit-learn on inertial sensor data, from feature engineering through to models small enough to run on the sensor itself.</li>
-            <li>Built the collection and conversion tooling around ST sensor hardware, turning raw datalogger output into labeled datasets a model can be trained on.</li>
+            <li>Built the collection and conversion tooling around STM32 based ST sensor boards, turning raw datalogger output into labeled datasets a model can be trained on.</li>
             <li>Evaluation and hardening of the motion-sensor classifiers behind A-Live, the anti-bot liveness check, building the harness that measures what each change actually does.</li>
             <li>Android applications for real-time biometric sensing, data streaming and workflow control.</li>
             <li>C++ and QML software on Linux-based phones interfacing with sensors and ML inference components.</li>
@@ -195,8 +195,8 @@
             scikit-learn to tell from the micro-vibrations of a driver's grip whether
             their hands were on the wheel, reported live on an indicator light. It ran
             first through ST's own on-sensor Machine Learning Core, then as an external
-            tree in the sensor's firmware, so there is no camera, no separate processor
-            and nothing the driver has to do deliberately. Better than 99% accuracy at
+            tree in firmware on the STM32 alongside it. No camera, no extra hardware, and
+            nothing the driver has to do deliberately. Better than 99% accuracy at
             under 0.5% false positives, answering within 1.5 seconds. Built with one
             other engineer, and the subject of the pending patent application I am
             named on.
