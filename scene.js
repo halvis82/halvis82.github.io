@@ -17,7 +17,7 @@
    2. Equatorial. Stars, constellation figures, and the computed
       positions of the Sun, Moon and planets, in right ascension and
       declination.
-   3. The view. Centred on the point of the globe the station is over.
+   3. The view. Centered on the point of the globe the station is over.
       Greenwich sidereal time converts that geographic longitude into a
       right ascension, which is the hinge between systems one and two.
 
@@ -56,7 +56,7 @@
   var EARTH_KM = 6371;
 
   var iss = null;
-  // Which way along the orbit it is travelling. Held unknown until two
+  // Which way along the orbit it is traveling. Held unknown until two
   // readings far enough apart prove it, because guessing means drawing the
   // path backwards for the first few seconds.
   var ascending = true, dirKnown = false;
@@ -72,7 +72,7 @@
 
   // Turning the view inside out. At 0 we are outside looking at Earth with
   // the sky behind it. At 1 we are standing on the surface looking straight
-  // up. The two sky centres are exactly antipodal, so the transition is a
+  // up. The two sky centers are exactly antipodal, so the transition is a
   // 180 degree sweep about a perpendicular axis, which reads as the whole
   // scene tipping over rather than cutting between two states.
   var inside = 0, insideTarget = 0, insideAt = 0;
@@ -80,8 +80,8 @@
   var STAY_INSIDE_MS = 26000;
   var GREEN = '#57cf92';
 
-  var gx = 0, gy = 0, gr = 150;      // globe centre and radius
-  var sx = 0, sy = 0, sScale = 1, sOut = 1, sIn = 1;   // sky centre and scale
+  var gx = 0, gy = 0, gr = 150;      // globe center and radius
+  var sx = 0, sy = 0, sScale = 1, sOut = 1, sIn = 1;   // sky center and scale
 
   // lat, lon, label, small
   var PLACES = [
@@ -309,7 +309,7 @@
     return a[0] * b[0] + a[1] * b[1] + a[2] * b[2] > 0;
   }
 
-  // Sky: stereographic about the point opposite the view centre, which is
+  // Sky: stereographic about the point opposite the view center, which is
   // the patch of sky lying behind Earth from where we are looking.
   var skyRa0 = 0, skyDec0 = 0;
 
@@ -325,7 +325,7 @@
 
   var zenRa = 0, zenDec = 0, locRa = 0, locDec = 0;
 
-  function updateSkyCentre(date) {
+  function updateSkyCenter(date) {
     var ra0 = norm360(gmst(julian(date)) + lon0);
     // The backdrop always shows the sky behind Earth. It does not flip.
     skyRa0 = norm360(ra0 + 180);
@@ -344,7 +344,7 @@
     locRa = rd[0]; locDec = rd[1];
   }
 
-  // Projection for the porthole: same stereographic maths, but centred on the
+  // Projection for the porthole: same stereographic math, but centered on the
   // globe and scaled so the horizon lands exactly on its rim.
   var lx = 0, ly = 0, lScale = 1, zoomK = 1;
 
@@ -505,7 +505,7 @@
   // minutes and took 3885 updates: every one of the eight voltages arrived,
   // steady at 159.9 to 160.6 volts, which is exactly the station's regulated
   // 160 volt bus. Not one sample from any current channel. They are in the
-  // catalogue but not on the public feed.
+  // catalog but not on the public feed.
   //
   // Voltage alone says nothing, because a regulated bus sits at 160 volts
   // whether the arrays are producing 5 kilowatts or 200. So there is no
@@ -1121,7 +1121,7 @@
     var alt = 1 + iss.altitude / EARTH_KM;
 
     // Reach past the limb on both sides. The visible hemisphere spans ninety
-    // degrees of arc from the centre, which is about twenty-three minutes of
+    // degrees of arc from the center, which is about twenty-three minutes of
     // flight, so anything shorter stops in open ocean partway across.
     if (dirKnown) {
       var track = groundTrack(iss.latitude, iss.longitude, 51.6, ascending, 28, 46, 0.5);
@@ -1196,7 +1196,7 @@
     sy = H * 0.38 + parY;
 
     gy = H - gr * 0.52 + parY;
-    // The porthole keeps the globe's footprint. The sense of travelling to
+    // The porthole keeps the globe's footprint. The sense of traveling to
     // the surface comes from the globe swelling inside it, not from the
     // window itself growing.
     lx = gx; ly = gy; lScale = gr * (1 + 0.08 * inside);
@@ -1204,7 +1204,7 @@
     // settles as it arrives, rather than moving at a constant rate.
     zoomK = 1 + 7.5 * (inside * inside * (3 - 2 * inside));
 
-    updateSkyCentre(now);
+    updateSkyCenter(now);
 
     drawFigures();
     drawStars();

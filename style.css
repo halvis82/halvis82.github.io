@@ -523,7 +523,7 @@ main {
 
 /* Waiting on a picture. Same box as a real one, so dropping the image in
    later changes nothing about the layout. Dashed and unfilled rather than a
-   grey block, which would read as an image that failed to load. */
+   gray block, which would read as an image that failed to load. */
 .proj-shot-empty {
   aspect-ratio: 4 / 3;
   border-style: dashed;
