@@ -356,6 +356,35 @@ a {
 }
 .interests p { color: var(--muted); font-size: .9rem; }
 
+/* ----------------------------- skills --------------------------- */
+
+.skills {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: .55rem;
+  max-width: var(--measure);
+}
+.skills > li {
+  display: grid;
+  grid-template-columns: 11rem 1fr;
+  gap: 1rem;
+  font-size: .93rem;
+  color: var(--text);
+}
+.skills span {
+  color: var(--muted);
+  font-size: .78rem;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  font-weight: 600;
+  padding-top: .15rem;
+}
+@media (max-width: 640px) {
+  .skills > li { grid-template-columns: 1fr; gap: .1rem; }
+}
+
 /* ----------------------------- facts ---------------------------- */
 
 .facts {
