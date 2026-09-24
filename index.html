@@ -119,7 +119,7 @@
           <ul class="bullets">
             <li>Trained classifiers in scikit-learn on inertial sensor data, from feature engineering through to models small enough to run on the sensor itself.</li>
             <li>Built the collection and conversion tooling around STM32 based ST sensor boards, turning raw datalogger output into labeled datasets a model can be trained on.</li>
-            <li>Evaluation and hardening of the motion-sensor classifiers behind A-Live, the anti-bot liveness check, building the harness that measures what each change actually does.</li>
+            <li>Evaluated and hardened the motion-sensor classifiers behind A-Live, the anti-bot liveness check, and built the harness that measures what each change actually does.</li>
             <li>Android applications for real-time biometric sensing, data streaming and workflow control.</li>
             <li>C++ and QML software on Linux-based phones interfacing with sensors and ML inference components.</li>
             <li>Named inventor on a pending patent application covering automotive biometrics and driver monitoring.</li>
@@ -227,6 +227,35 @@
           </p>
         </div>
         <div class="proj-shot proj-shot-empty" aria-hidden="true"></div>
+      </li>
+
+      <li class="has-shot">
+        <div class="proj-main">
+          <div class="proj-head">
+            <h3>FlightScout</h3>
+            <span class="proj-links">
+              <a href="https://flightscout-app.vercel.app">Live site</a>
+              <a href="https://github.com/halvis82/FlightScout">Source</a>
+            </span>
+          </div>
+          <p class="proj-at">Personal project</p>
+          <p>
+            A flight search for people who fly a lot. It asks Google Flights,
+            Kiwi.com and about ten airlines' own sites at once, shows results as each
+            source answers, and builds cheaper trips out of separate tickets: self
+            transfers, stopovers, nested round trips and multi city routes. Leave
+            the destination empty and it maps the cheapest places to go from where
+            you are. Routes you care about are checked twice a day by a scheduled
+            job that keeps the price history and sends alerts. A Next.js site and a
+            Python engine on Vercel with Postgres behind them, plus a CLI and an MCP
+            server so a Claude session can search flights directly.
+          </p>
+        </div>
+        <img class="proj-shot" src="img/flightscout.webp" width="800" height="600"
+             loading="lazy" decoding="async"
+             alt="FlightScout exploring from San Diego. A world map with a price label
+                  on each city, colored from green for cheap to orange for expensive,
+                  next to a list of the cheapest round trips.">
       </li>
 
       <li>

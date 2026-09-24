@@ -498,6 +498,7 @@ main {
 }
 .proj-head a { font-size: .87rem; font-weight: 550; text-decoration: none; }
 .proj-head a:hover { text-decoration: underline; }
+.proj-links { display: flex; gap: .9rem; white-space: nowrap; }
 .proj-list p { color: var(--muted); font-size: .95rem; max-width: var(--measure); }
 /* A project with a picture puts it in a second column, spanning however many
    rows the text happens to take. Only entries carrying .has-shot become grids,
