@@ -310,7 +310,10 @@
   }
 
   // Sky: stereographic about the point opposite the view center, which is
-  // the patch of sky lying behind Earth from where we are looking.
+  // the patch of sky lying behind Earth from where we are looking. It is
+  // centered on the globe, so what sits around Earth on screen is what is
+  // really behind it, and drawn as seen from inside the sky, so east is on
+  // the left, the same way round as the globe in front of it.
   var skyRa0 = 0, skyDec0 = 0;
 
   function rodrigues(v, k, ang) {
@@ -362,9 +365,9 @@
     var d0 = skyDec0 * D2R, d = dec * D2R;
     var dra = (ra - skyRa0) * D2R;
     var cosc = Math.sin(d0) * Math.sin(d) + Math.cos(d0) * Math.cos(d) * Math.cos(dra);
-    if (cosc < -0.34) return null;                 // beyond the useful field
+    if (cosc < -0.5) return null;                  // beyond the useful field
     var k = sScale / (1 + cosc);                    // stereographic
-    return [sx + k * Math.cos(d) * Math.sin(dra),
+    return [sx - k * Math.cos(d) * Math.sin(dra),
             sy - k * (Math.cos(d0) * Math.sin(d) - Math.sin(d0) * Math.cos(d) * Math.cos(dra))];
   }
 
@@ -1192,10 +1195,9 @@
     // tilting. Applied identically to the sky and the globe so nothing
     // detaches from anything else.
     sScale = sOut;
-    sx = W * 0.40;
-    sy = H * 0.38 + parY;
-
     gy = H - gr * 0.52 + parY;
+    sx = gx;
+    sy = gy;
     // The porthole keeps the globe's footprint. The sense of traveling to
     // the surface comes from the globe swelling inside it, not from the
     // window itself growing.
@@ -1292,9 +1294,15 @@
     // part of the backdrop rather than as a widget parked on the text.
     gx = W - gr * 0.72;
     gy = H - gr * 0.52 + parY;
-    sx = W * 0.40;
-    sy = H * 0.38;
-    sOut = Math.max(W, H) * 0.42;
+    sx = gx;
+    sy = gy;
+    // Wide enough that the far corner of the page reaches about 115 degrees
+    // from the point behind Earth. Any further and the sky overhead, the Sun
+    // at midday included, would creep back in around the edges.
+    var cy = H - gr * 0.52;            // before any scroll offset
+    var far = Math.max(Math.hypot(gx, cy), Math.hypot(W - gx, cy),
+                       Math.hypot(gx, H - cy), Math.hypot(W - gx, H - cy));
+    sOut = far / Math.tan(57.5 * D2R);
     sIn  = Math.min(W, H) * 0.46;      // puts the horizon inside the frame
     sScale = sOut + (sIn - sOut) * inside;
   }
