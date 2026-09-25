@@ -983,7 +983,7 @@
       eventLabel(p, v.name, RED, 8);
     }
 
-    // Cyclones: a turning spiral, and it turns the right way. Anticlockwise
+    // Cyclones: a turning spiral, and it turns the right way. Counterclockwise
     // in the northern hemisphere, clockwise in the southern.
     for (i = 0; i < events.storms.length; i++) {
       var st = events.storms[i];
