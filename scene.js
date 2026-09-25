@@ -68,6 +68,12 @@
   var dragging = false, dragX = 0, dragY = 0, dragLon = 0, dragLat = 0;
   var releasedAt = 0, everDragged = false;
   var HOLD_MS = 5000;      // how long to stay put after letting go
+
+  // The opening move. The view starts on the station, holds there long enough
+  // to take it in, then glides once to the visitor and makes them home. Any
+  // grab or click before or during it cancels it for good.
+  var TOUR_WAIT = 4500;    // ms on the station before setting off
+  var tour = null, tourDone = false, homeYou = false, firstFixAt = 0;
   var DEG_PER_PX = 0.26;
 
   // Turning the view inside out. At 0 we are outside looking at Earth with
@@ -541,9 +547,11 @@
         if (Math.abs(dl) > 0.02) { ascending = dl > 0; dirKnown = true; break; }
       }
       iss = d;
-      tLon = d.longitude;
-      tLat = d.latitude * 0.45;
-      if (!haveFix) { lon0 = tLon; lat0 = tLat; haveFix = true; }
+      if (!homeYou) {
+        tLon = d.longitude;
+        tLat = d.latitude * 0.45;
+      }
+      if (!haveFix) { lon0 = tLon; lat0 = tLat; haveFix = true; firstFixAt = Date.now(); }
       setCaption();
     }).catch(function () { setCaption(); });
   }
@@ -1250,6 +1258,39 @@
     return cur + d * k;
   }
 
+  // Along the great circle between the two view centers, so the globe turns
+  // about one axis the whole way instead of swinging in latitude and
+  // longitude separately.
+  function beginTour() {
+    var to = [Math.max(-82, Math.min(82, you.lat)), you.lon];
+    var a = vec3(lat0, lon0), b = vec3(to[0], to[1]);
+    var ang = Math.acos(Math.max(-1, Math.min(1, a[0] * b[0] + a[1] * b[1] + a[2] * b[2])));
+    tour = { a: a, b: b, ang: ang, to: to, at: Date.now(),
+             dur: Math.max(3000, Math.min(6000, 2200 + ang * R2D * 24)) };
+    homeYou = true;
+    tLat = to[0]; tLon = to[1];
+  }
+
+  function stepTour() {
+    var p = Math.min(1, (Date.now() - tour.at) / tour.dur);
+    // Smootherstep: no jolt at either end, speed and acceleration both
+    // start and finish at zero
+    var e = p * p * p * (p * (p * 6 - 15) + 10);
+    if (p >= 1 || tour.ang < 1e-4) {
+      lat0 = tour.to[0]; lon0 = tour.to[1];
+      tour = null; tourDone = true;
+      return;
+    }
+    var s = Math.sin(tour.ang);
+    var wa = Math.sin((1 - e) * tour.ang) / s, wb = Math.sin(e * tour.ang) / s;
+    var v = [wa * tour.a[0] + wb * tour.b[0], wa * tour.a[1] + wb * tour.b[1],
+             wa * tour.a[2] + wb * tour.b[2]];
+    lat0 = Math.atan2(v[2], Math.sqrt(v[0] * v[0] + v[1] * v[1])) * R2D;
+    lon0 = Math.atan2(v[1], v[0]) * R2D;
+  }
+
+  function cancelTour() { tour = null; tourDone = true; }
+
   function frame(now) {
     raf = requestAnimationFrame(frame);
     if (!t0) t0 = now;
@@ -1261,7 +1302,11 @@
     if (inside < insideTarget) inside = Math.min(insideTarget, inside + step);
     else if (inside > insideTarget) inside = Math.max(insideTarget, inside - step);
 
-    if (!dragging && inside < 0.02 && insideTarget === 0) {
+    if (!tourDone && !tour && you && haveFix && !dragging && insideTarget === 0 &&
+        inside < 0.02 && Date.now() - firstFixAt > TOUR_WAIT) beginTour();
+
+    if (tour) stepTour();
+    else if (!dragging && inside < 0.02 && insideTarget === 0) {
       var since = Date.now() - releasedAt;
       if (!everDragged || since > HOLD_MS) {
         // Ease back onto the station. Slower right after a drag so it
@@ -1276,7 +1321,7 @@
     // without inferring it from pixels.
     parY += (parTarget - parY) * 0.08;
 
-    window.__view = { lon0: lon0, lat0: lat0, dragging: dragging,
+    window.__view = { lon0: lon0, lat0: lat0, dragging: dragging, tour: !!tour, tourDone: tourDone,
                       inside: inside, you: you, skyMode: skyMode,
                       stationDrawn: stationDrawn, trackPts: trackPts,
                       ascending: ascending, dirKnown: dirKnown, parY: parY,
@@ -1458,6 +1503,7 @@
     if (e.button !== 0) return;
     if (!draggableFrom(e.target)) return;
     downX = e.clientX; downY = e.clientY; downAt = Date.now();
+    cancelTour();
     dragging = true; everDragged = true;
     dragX = e.clientX; dragY = e.clientY;
     dragLon = lon0; dragLat = lat0;
