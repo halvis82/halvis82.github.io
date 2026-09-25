@@ -2,13 +2,16 @@
    A live orbital scene: the sky, the planets, the Moon, Earth, and the
    International Space Station, all in one rotating frame.
 
-   Only one thing is fetched:
+   The station comes from one feed:
 
      https://api.wheretheiss.at/v1/satellites/25544
 
-   which gives the station's latitude, longitude, altitude, speed, whether
-   it is in sunlight, and the subsolar point. Everything else is worked
-   out from the clock.
+   which gives its latitude, longitude, altitude, speed, and the subsolar
+   point, now or at any timestamp asked for. One live reading starts it off,
+   then positions five minutes apart across an orbit either side of now,
+   which both draw the track and carry the live position between them, so
+   after the opening requests it is one request every five minutes. The
+   sky is worked out from the clock.
 
    Three coordinate systems, tied together so they turn as one:
 
@@ -17,14 +20,14 @@
    2. Equatorial. Stars, constellation figures, and the computed
       positions of the Sun, Moon and planets, in right ascension and
       declination.
-   3. The view. Centered on the point of the globe the station is over.
-      Greenwich sidereal time converts that geographic longitude into a
-      right ascension, which is the hinge between systems one and two.
+   3. The view. Centered on the point of the globe the station is over,
+      then, after a few seconds, on the visitor. Greenwich sidereal time
+      converts that geographic longitude into a right ascension, which is
+      the hinge between systems one and two.
 
    The consequence is that the sky is not wallpaper. It sits still while
-   the Earth turns under it, exactly as the real sky does, and the whole
-   frame drifts because the station is crossing about four degrees of
-   longitude every minute.
+   the Earth turns under it, exactly as the real sky does, and what lies
+   around the globe on screen is the sky that is really behind it.
 
    The planets come from the JPL approximate elements for 1800 to 2050:
    Keplerian elements and their per-century rates, solved for eccentric
@@ -119,6 +122,31 @@
   var COASTLINES = decodeDelta(COAST, 10);
   var FIGURES    = decodeDelta(CLINES, 10);
 
+  // Unit vectors, worked out once. Redrawing then needs a few multiplications
+  // per point instead of a handful of sines and cosines, which is what makes
+  // dragging cheap. Sky points as x, y, z. Coastline points as the cosine and
+  // sine of latitude and of longitude.
+  function unitSky(pts) {
+    var out = new Float64Array(pts.length * 3);
+    for (var i = 0; i < pts.length; i++) {
+      var ra = pts[i][0] * Math.PI / 180, de = pts[i][1] * Math.PI / 180;
+      out[i * 3] = Math.cos(de) * Math.cos(ra);
+      out[i * 3 + 1] = Math.cos(de) * Math.sin(ra);
+      out[i * 3 + 2] = Math.sin(de);
+    }
+    return out;
+  }
+  var FIG_V = FIGURES.map(unitSky);
+  var COAST_T = COASTLINES.map(function (pts) {
+    var out = new Float64Array(pts.length * 4);
+    for (var i = 0; i < pts.length; i++) {
+      var lo = pts[i][0] * Math.PI / 180, la = pts[i][1] * Math.PI / 180;
+      out[i * 4] = Math.cos(la); out[i * 4 + 1] = Math.sin(la);
+      out[i * 4 + 2] = Math.cos(lo); out[i * 4 + 3] = Math.sin(lo);
+    }
+    return out;
+  });
+
   // The fourth field indexes the appearance tables below. Everything a star
   // looks like follows from its magnitude, which arrives in whole tenths, so
   // the integer is all that is needed. Magnitude runs negative for the
@@ -136,6 +164,7 @@
     for (i = 0; i < out.length; i++) out[i][3] -= MAG_MIN;
     return out;
   })();
+  var STAR_V = unitSky(STARLIST);
 
   var NAMED = (function () {
     if (typeof SNAMES === 'undefined') return [];
@@ -333,12 +362,20 @@
   }
 
   var zenRa = 0, zenDec = 0, locRa = 0, locDec = 0;
+  // The backdrop's center, and the directions that run right and up on
+  // screen from it, as vectors. Right is minus east, since this is the sky
+  // seen from inside.
+  var SC = [1, 0, 0], SE = [0, 1, 0], SN = [0, 0, 1];
 
   function updateSkyCenter(date) {
     var ra0 = norm360(gmst(julian(date)) + lon0);
     // The backdrop always shows the sky behind Earth. It does not flip.
     skyRa0 = norm360(ra0 + 180);
     skyDec0 = -lat0;
+    var ca = skyRa0 * D2R, cd = skyDec0 * D2R;
+    SC = [Math.cos(cd) * Math.cos(ca), Math.cos(cd) * Math.sin(ca), Math.sin(cd)];
+    SE = [-Math.sin(ca), Math.cos(ca), 0];
+    SN = [-Math.sin(cd) * Math.cos(ca), -Math.sin(cd) * Math.sin(ca), Math.cos(cd)];
 
     // The porthole sweeps from that same backdrop direction round to the
     // zenith overhead, a clean 180 degrees, which is what sells it as the
@@ -365,6 +402,19 @@
     var k = lScale / (1 + cosc);
     return [lx + k * Math.cos(d) * Math.sin(dra),
             ly - k * (Math.cos(d0) * Math.sin(d) - Math.sin(d0) * Math.cos(d) * Math.cos(dra))];
+  }
+
+  // The same projection as projSky, from a precomputed unit vector. Writes
+  // into PT rather than allocating, since it runs for every star.
+  var PT = [0, 0];
+  function projSkyV(v, i) {
+    var x = v[i], y = v[i + 1], z = v[i + 2];
+    var cosc = x * SC[0] + y * SC[1] + z * SC[2];
+    if (cosc < -0.5) return false;
+    var k = sScale / (1 + cosc);
+    PT[0] = sx - k * (x * SE[0] + y * SE[1]);
+    PT[1] = sy - k * (x * SN[0] + y * SN[1] + z * SN[2]);
+    return true;
   }
 
   function projSky(ra, dec) {
@@ -562,7 +612,9 @@
 
   var col = { ink: '#fff', acc: '#6ba5f5', dark: true };
 
+  var themeGen = 0;           // bumps on every theme read, so caches notice
   function readTheme() {
+    themeGen++;
     var cs = getComputedStyle(document.documentElement);
     col.ink = cs.getPropertyValue('--text').trim() || '#fff';
     col.acc = cs.getPropertyValue('--accent').trim() || '#6ba5f5';
@@ -611,14 +663,13 @@
   function drawFigures() {
     ctx.strokeStyle = rgba(col.ink, col.dark ? 0.17 : 0.13);
     ctx.lineWidth = 0.7;
-    for (var i = 0; i < FIGURES.length; i++) {
-      var seg = FIGURES[i], started = false;
+    for (var i = 0; i < FIG_V.length; i++) {
+      var seg = FIG_V[i], started = false;
       ctx.beginPath();
-      for (var j = 0; j < seg.length; j++) {
-        var p = projSky(seg[j][0], seg[j][1]);
-        if (!p) { started = false; continue; }
-        if (!started) { ctx.moveTo(p[0], p[1]); started = true; }
-        else ctx.lineTo(p[0], p[1]);
+      for (var j = 0; j < seg.length; j += 3) {
+        if (!projSkyV(seg, j)) { started = false; continue; }
+        if (!started) { ctx.moveTo(PT[0], PT[1]); started = true; }
+        else ctx.lineTo(PT[0], PT[1]);
       }
       ctx.stroke();
     }
@@ -627,8 +678,8 @@
   function drawStars() {
     for (var i = 0; i < STARLIST.length; i++) {
       var s = STARLIST[i];
-      var p = projSky(s[0], s[1]);
-      if (!p) continue;
+      if (!projSkyV(STAR_V, i * 3)) continue;
+      var p = PT;
       if (p[0] < -20 || p[0] > W + 20 || p[1] < -20 || p[1] > H + 20) continue;
       var mi = s[3];
       ctx.fillStyle = STAR_FILL_SKY[mi];
@@ -823,6 +874,17 @@
   function drawEarth(sLat, sLon, t) {
     var grBase = gr;
     gr = gr * zoomK;
+    // Outside, and not mid-flip, the outline, grid, coastlines and place
+    // names come from a cached copy that is only redrawn when the view or the
+    // day side has actually moved. During a flip the globe is scaled and
+    // faded every frame, so it is drawn directly.
+    if (zoomK === 1 && inside <= 0.001) blitEarthBase(sLat, sLon);
+    else drawEarthBase(sLat, sLon);
+    drawEarthLive(sLat, sLon, t);
+    gr = grBase;
+  }
+
+  function drawEarthBase(sLat, sLon) {
     var i, j, lat, lon, p;
 
     // Fully opaque. Stars, constellation figures and planets sitting behind
@@ -855,20 +917,29 @@
       ctx.stroke();
     }
 
+    // Coastlines, bright on the day side and faint on the night side. Same
+    // projection and same test as projEarth and sunlitAt, from the
+    // precomputed sines and cosines.
     ctx.lineWidth = 0.9;
-    for (i = 0; i < COASTLINES.length; i++) {
-      var pts = COASTLINES[i], run = [], runLit = null;
-      for (j = 0; j < pts.length; j++) {
-        p = projEarth(pts[j][1], pts[j][0]);
-        var lit = sunlitAt(pts[j][1], pts[j][0], sLat, sLon);
-        if (!p) { if (run.length > 1) strokeRun(run, runLit); run = []; runLit = null; continue; }
+    var l0 = lat0 * D2R, sl0 = Math.sin(l0), cl0 = Math.cos(l0);
+    var o0 = lon0 * D2R, cO = Math.cos(o0), sO = Math.sin(o0);
+    var sv = vec3(sLat, sLon);
+    for (i = 0; i < COAST_T.length; i++) {
+      var q = COAST_T[i], n = q.length / 4, run = [], runLit = null;
+      for (j = 0; j < n; j++) {
+        var cla = q[j * 4], sla = q[j * 4 + 1], clo = q[j * 4 + 2], slo = q[j * 4 + 3];
+        var cr = clo * cO + slo * sO, sr = slo * cO - clo * sO;
+        var z = sl0 * sla + cl0 * cla * cr;
+        var lit = cla * clo * sv[0] + cla * slo * sv[1] + sla * sv[2] > 0;
+        if (z < 0) { if (run.length > 2) strokeRun(run, runLit); run = []; runLit = null; continue; }
+        var px = gx + gr * cla * sr, py = gy - gr * (cl0 * sla - sl0 * cla * cr);
         if (runLit !== null && lit !== runLit) {
-          if (run.length > 1) strokeRun(run, runLit);
-          run = [run[run.length - 1]];
+          if (run.length > 2) strokeRun(run, runLit);
+          run = [run[run.length - 2], run[run.length - 1]];
         }
-        runLit = lit; run.push(p);
+        runLit = lit; run.push(px, py);
       }
-      if (run.length > 1) strokeRun(run, runLit);
+      if (run.length > 2) strokeRun(run, runLit);
     }
 
     for (i = 0; i < PLACES.length; i++) {
@@ -886,6 +957,42 @@
       ctx.fillStyle = rgba(col.ink, (q[3] ? 0.34 : 0.45) * edge);
       ctx.fillText(q[2], p[0] + 5, p[1] + (i === 0 ? 9 : -1));
     }
+  }
+
+  // The base layer, cached. Sized to the globe and its labels rather than
+  // the whole page, and redrawn only when something it shows has moved by
+  // more than a tenth of a pixel or so.
+  var earthLayer = { c: document.createElement('canvas'), key: null, dx: 0, dy: 0 };
+  earthLayer.x = earthLayer.c.getContext('2d');
+
+  function blitEarthBase(sLat, sLon) {
+    var L = earthLayer, k = L.key;
+    var stale = !k || k.W !== W || k.H !== H || k.dpr !== dpr || k.theme !== themeGen ||
+      k.gr !== gr || Math.abs(k.gx - gx) > 0.05 || Math.abs(k.gy - gy) > 0.05 ||
+      Math.abs(((lon0 - k.lon0 + 540) % 360) - 180) > 0.02 || Math.abs(lat0 - k.lat0) > 0.02 ||
+      Math.abs(((sLon - k.sLon + 540) % 360) - 180) > 0.05 || Math.abs(sLat - k.sLat) > 0.05;
+    if (stale) {
+      var x0 = Math.max(0, gx - gr - 6), x1 = Math.min(W, gx + gr + 90);
+      var y0 = Math.max(0, gy - gr - 14), y1 = Math.min(H, gy + gr + 14);
+      L.dx = Math.floor(x0 * dpr); L.dy = Math.floor(y0 * dpr);
+      var w = Math.max(1, Math.ceil(x1 * dpr) - L.dx), h = Math.max(1, Math.ceil(y1 * dpr) - L.dy);
+      if (L.c.width !== w || L.c.height !== h) { L.c.width = w; L.c.height = h; }
+      L.x.setTransform(1, 0, 0, 1, 0, 0);
+      L.x.clearRect(0, 0, w, h);
+      L.x.setTransform(dpr, 0, 0, dpr, -L.dx, -L.dy);
+      L.x.lineJoin = 'round'; L.x.lineCap = 'round';
+      var keep = ctx; ctx = L.x;
+      try { drawEarthBase(sLat, sLon); } finally { ctx = keep; }
+      L.key = { W: W, H: H, dpr: dpr, theme: themeGen, gr: gr, gx: gx, gy: gy,
+                lon0: lon0, lat0: lat0, sLon: sLon, sLat: sLat };
+    }
+    ctx.save();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.drawImage(L.c, L.dx, L.dy);
+    ctx.restore();
+  }
+
+  function drawEarthLive(sLat, sLon, t) {
 
     // Visitor position, from their IP. Green so it is obviously "you"
     // rather than another piece of the scene.
@@ -909,7 +1016,6 @@
     drawAurora(t, sLat, sLon);
     drawEvents(t);
     drawStation(t);
-    gr = grBase;
   }
 
   var ORANGE = '#e8843c';   // wildfires
@@ -1076,10 +1182,11 @@
     placeLabel(p[0] + (off || 6), p[1], short, c, 7, 0.55);
   }
 
+  // run is flat: x, y, x, y ...
   function strokeRun(run, lit) {
     ctx.beginPath();
-    ctx.moveTo(run[0][0], run[0][1]);
-    for (var k = 1; k < run.length; k++) ctx.lineTo(run[k][0], run[k][1]);
+    ctx.moveTo(run[0], run[1]);
+    for (var k = 2; k < run.length; k += 2) ctx.lineTo(run[k], run[k + 1]);
     ctx.strokeStyle = rgba(col.ink, lit ? 0.72 : 0.20);
     ctx.stroke();
   }
@@ -1096,20 +1203,132 @@
   // it, dragging the path west as the orbit proceeds. Checked against real
   // positions two minutes apart, this lands within 4 km, where the previous
   // version was out by 1258 km.
-  function groundTrack(lat, lon, inc, ascending, backMin, fwdMin, step) {
-    var pts = [], la = lat * D2R;
-    var s = Math.max(-1, Math.min(1, Math.cos(inc * D2R) / Math.max(1e-6, Math.cos(la))));
+  function propagate(lat, lon, ascending, m) {
+    var la = lat * D2R;
+    var s = Math.max(-1, Math.min(1, Math.cos(51.6 * D2R) / Math.max(1e-6, Math.cos(la))));
     var az = Math.asin(s);
     if (!ascending) az = Math.PI - az;
-    for (var m = -backMin; m <= fwdMin; m += step) {
-      var d = ORB_DEG_PER_MIN * m * D2R;
-      var sa = Math.max(-1, Math.min(1,
-        Math.sin(la) * Math.cos(d) + Math.cos(la) * Math.sin(d) * Math.cos(az)));
-      var dlon = Math.atan2(Math.sin(az) * Math.sin(d) * Math.cos(la),
-                            Math.cos(d) - Math.sin(la) * sa) * R2D;
-      pts.push([Math.asin(sa) * R2D, lon + dlon - EARTH_DEG_PER_MIN * m]);
+    var d = ORB_DEG_PER_MIN * m * D2R;
+    var sa = Math.max(-1, Math.min(1,
+      Math.sin(la) * Math.cos(d) + Math.cos(la) * Math.sin(d) * Math.cos(az)));
+    var dlon = Math.atan2(Math.sin(az) * Math.sin(d) * Math.cos(la),
+                          Math.cos(d) - Math.sin(la) * sa) * R2D;
+    return [Math.asin(sa) * R2D, lon + dlon - EARTH_DEG_PER_MIN * m];
+  }
+
+  // Real positions rather than a projection. The feed will compute where the
+  // station is at any timestamp, from the same orbital elements it uses for
+  // the live position, so the track is built from its answers five minutes
+  // apart, from fifty minutes ago to fifty five ahead. Between two of them
+  // the path above is run forward from one and back from the other and the
+  // two are blended, which pins it to both. Checked against the feed at
+  // points in between, that lands within two kilometers, where running the
+  // path above alone for three quarters of an hour drifts by up to a hundred.
+  var ANCHOR_STEP = 300;          // seconds
+  var anchors = [], anchorsAt = 0;
+
+  function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+
+  var anchorsBusy = false;
+
+  // Only the timestamps not already held are asked for, the ones around now
+  // first, so after the opening few requests a refresh is a single request
+  // for the next one or two. Ten timestamps is the most one request takes,
+  // and they are spaced out since the feed asks for about one a second.
+  function loadAnchors() {
+    if (anchorsBusy) return Promise.resolve();
+    var base = Math.floor(Date.now() / 1000 / ANCHOR_STEP) * ANCHOR_STEP, have = {}, want = [], i;
+    for (i = 0; i < anchors.length; i++) have[anchors[i].timestamp] = true;
+    var order = [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, -10, -9, -8, -7, -6, -5];
+    for (i = 0; i < order.length; i++) {
+      var ts = base + order[i] * ANCHOR_STEP;
+      if (!have[ts]) want.push(ts);
     }
-    return pts;
+    if (!want.length) return Promise.resolve();
+    anchorsBusy = true;
+    function part(k) {
+      return fetch(API + '/positions?timestamps=' + want.slice(k, k + 10).join(','), { cache: 'no-store' })
+        .then(function (r) { if (!r.ok) throw new Error('positions ' + r.status); return r.json(); })
+        .then(function (list) {
+          var keep = Date.now() / 1000 - 60 * 60, merged = [], j;
+          for (j = 0; j < anchors.length; j++) if (anchors[j].timestamp >= keep) merged.push(anchors[j]);
+          for (j = 0; j < list.length; j++) {
+            if (typeof list[j].latitude === 'number' && !have[list[j].timestamp]) {
+              have[list[j].timestamp] = true;
+              merged.push(list[j]);
+            }
+          }
+          merged.sort(function (a, b) { return a.timestamp - b.timestamp; });
+          anchors = merged; anchorsAt = Date.now(); trackCache = null;
+          return k + 10 < want.length ? wait(1500).then(function () { return part(k + 10); }) : null;
+        });
+    }
+    return part(0).catch(function () {})     // keep what we had, the live position still polls
+      .then(function () { anchorsBusy = false; });
+  }
+
+  // Index of the anchor at or before T, or -1 unless the next one follows it
+  // five minutes later, so a missing reading leaves a gap rather than a guess
+  function anchorIndex(T) {
+    var lo = 0, hi = anchors.length - 1;
+    if (hi < 1 || T < anchors[0].timestamp || T >= anchors[hi].timestamp) return -1;
+    while (hi - lo > 1) {
+      var mid = (lo + hi) >> 1;
+      if (anchors[mid].timestamp <= T) lo = mid; else hi = mid;
+    }
+    return anchors[lo + 1].timestamp - anchors[lo].timestamp === ANCHOR_STEP ? lo : -1;
+  }
+
+  function anchoredAt(T, i) {
+    var a = anchors[i], b = anchors[i + 1];
+    var asc = b.latitude > a.latitude;
+    var pa = vec3.apply(null, propagate(a.latitude, a.longitude, asc, (T - a.timestamp) / 60));
+    var pb = vec3.apply(null, propagate(b.latitude, b.longitude, asc, (T - b.timestamp) / 60));
+    var w = (T - a.timestamp) / (b.timestamp - a.timestamp);
+    var x = pa[0] * (1 - w) + pb[0] * w, y = pa[1] * (1 - w) + pb[1] * w, z = pa[2] * (1 - w) + pb[2] * w;
+    return [Math.atan2(z, Math.sqrt(x * x + y * y)) * R2D, Math.atan2(y, x) * R2D];
+  }
+
+  // The live position between anchors, so the station moves every frame
+  // rather than jumping every few seconds, and no polling is needed while
+  // the anchors last.
+  function issFromAnchors() {
+    var T = Date.now() / 1000, i = anchorIndex(T);
+    if (i < 0) return false;
+    var a = anchors[i], b = anchors[i + 1], w = (T - a.timestamp) / ANCHOR_STEP;
+    var p = anchoredAt(T, i);
+    if (!iss) iss = {};
+    iss.latitude = p[0];
+    iss.longitude = ((p[1] + 540) % 360) - 180;
+    iss.altitude = a.altitude + (b.altitude - a.altitude) * w;
+    iss.velocity = a.velocity + (b.velocity - a.velocity) * w;
+    iss.solar_lat = a.solar_lat + (b.solar_lat - a.solar_lat) * w;
+    iss.solar_lon = a.solar_lon + ((((b.solar_lon - a.solar_lon) + 540) % 360) - 180) * w;
+    ascending = b.latitude > a.latitude; dirKnown = true;
+    if (!homeYou) { tLon = iss.longitude; tLat = iss.latitude * 0.45; }
+    if (!haveFix) { lon0 = tLon; lat0 = tLat; haveFix = true; firstFixAt = Date.now(); }
+    return true;
+  }
+
+  // Half an orbit behind and half ahead, one full revolution. The ends do not
+  // meet, and should not: Earth turns about twenty three degrees beneath the
+  // station in that time. Worked out once a second, since it moves a fifth
+  // of a pixel in that time.
+  var TRACK_BACK = 46, TRACK_FWD = 46, TRACK_STEP = 0.5;
+  var trackCache = null, trackAt = 0;
+
+  function currentTrack() {
+    var nowMs = Date.now();
+    if (trackCache && nowMs - trackAt < 1000) return trackCache;
+    var T0 = nowMs / 1000, pts = [];
+    for (var m = -TRACK_BACK; m <= TRACK_FWD; m += TRACK_STEP) {
+      var T = T0 + m * 60, i = anchorIndex(T);
+      if (i >= 0) pts.push(anchoredAt(T, i));
+      else if (dirKnown) pts.push(propagate(iss.latitude, iss.longitude, ascending, m));
+      else return (trackCache = null);
+    }
+    trackAt = nowMs;
+    return (trackCache = pts);
   }
 
   function drawTrackPart(track, i0, i1, alpha) {
@@ -1134,13 +1353,13 @@
     // Reach past the limb on both sides. The visible hemisphere spans ninety
     // degrees of arc from the center, which is about twenty-three minutes of
     // flight, so anything shorter stops in open ocean partway across.
-    if (dirKnown) {
-      var track = groundTrack(iss.latitude, iss.longitude, 51.6, ascending, 28, 46, 0.5);
+    var track = currentTrack();
+    if (track) {
       trackPts = track.length;
       // Where it has been, then where it is going, so the direction of travel
       // is legible without an arrowhead.
-      drawTrackPart(track, 0, 28 / 0.5, 0.16);
-      drawTrackPart(track, 28 / 0.5, track.length - 1, 0.42);
+      drawTrackPart(track, 0, TRACK_BACK / TRACK_STEP, 0.16);
+      drawTrackPart(track, TRACK_BACK / TRACK_STEP, track.length - 1, 0.42);
     } else {
       trackPts = 0;
     }
@@ -1169,9 +1388,13 @@
     ctx.strokeRect(-1.6, -2, 3.2, 4);
     ctx.restore();
 
+    // The glow used to be painted twice, once either side of the label. One
+    // gradient carrying the combined strength of the two looks the same.
     var pulse = 0.75 + Math.sin(t * 1.6) * 0.25;
+    var a0 = 0.32 * pulse, am = a0 / 2;
     var gl = ctx.createRadialGradient(s[0], s[1], 0, s[0], s[1], 26);
-    gl.addColorStop(0, rgba(col.acc, 0.32 * pulse));
+    gl.addColorStop(0, rgba(col.acc, 2 * a0 - a0 * a0));
+    gl.addColorStop(0.5, rgba(col.acc, 2 * am - am * am));
     gl.addColorStop(1, rgba(col.acc, 0));
     ctx.fillStyle = gl;
     ctx.beginPath(); ctx.arc(s[0], s[1], 26, 0, Math.PI * 2); ctx.fill();
@@ -1180,13 +1403,43 @@
     ctx.textAlign = 'left';
     ctx.fillStyle = rgba(col.acc, 0.65);
     ctx.fillText('ISS', s[0] + 13, s[1] - 6);
-
-    var gl = ctx.createRadialGradient(s[0], s[1], 0, s[0], s[1], 26);
-    gl.addColorStop(0, rgba(col.acc, 0.32 * pulse));
-    gl.addColorStop(1, rgba(col.acc, 0));
-    ctx.fillStyle = gl;
-    ctx.beginPath(); ctx.arc(s[0], s[1], 26, 0, Math.PI * 2); ctx.fill();
   }
+
+  // The backdrop, cached at full resolution. The sky turns a quarter of a
+  // degree a minute, which is a fraction of a pixel per second, so outside of
+  // a drag or a glide it is redrawn every few seconds rather than every frame.
+  var skyLayer = { c: document.createElement('canvas'), key: null };
+  skyLayer.x = skyLayer.c.getContext('2d');
+
+  function blitSky(now, t) {
+    var L = skyLayer, k = L.key;
+    var stale = !k || k.W !== W || k.H !== H || k.dpr !== dpr || k.theme !== themeGen ||
+      k.s !== sScale || Math.abs(k.sx - sx) > 0.05 || Math.abs(k.sy - sy) > 0.05 ||
+      Math.abs(((skyRa0 - k.ra + 540) % 360) - 180) > 0.02 || Math.abs(skyDec0 - k.dec) > 0.02;
+    if (stale) {
+      var w = Math.round(W * dpr), h = Math.round(H * dpr);
+      if (L.c.width !== w || L.c.height !== h) { L.c.width = w; L.c.height = h; }
+      L.x.setTransform(1, 0, 0, 1, 0, 0);
+      L.x.clearRect(0, 0, w, h);
+      L.x.setTransform(dpr, 0, 0, dpr, 0, 0);
+      L.x.lineJoin = 'round'; L.x.lineCap = 'round';
+      var keep = ctx; ctx = L.x;
+      try {
+        drawFigures();
+        drawStars();
+        drawBodies(now, t);
+        drawStarNames();
+      } finally { ctx = keep; }
+      L.key = { W: W, H: H, dpr: dpr, theme: themeGen, s: sScale, sx: sx, sy: sy,
+                ra: skyRa0, dec: skyDec0 };
+    }
+    ctx.save();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.drawImage(L.c, 0, 0);
+    ctx.restore();
+  }
+
+  var bodiesAt = 0;
 
   function draw(t) {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -1194,9 +1447,9 @@
 
     var now = new Date();
     // Sun, Moon and planets, solved once and shared by the sky and the
-    // porthole. Both used to work the whole set out for themselves, a few
-    // milliseconds apart, and got the same answer twice.
-    frameBodies = bodies(now);
+    // porthole. They move by arcseconds a minute, so once every few seconds
+    // is plenty.
+    if (!frameBodies.length || now - bodiesAt > 5000) { frameBodies = bodies(now); bodiesAt = +now; }
 
     // Scrolling nudges the whole scene upward. Pure translation, no change of
     // angle, so it reads as the viewpoint rising rather than the camera
@@ -1215,11 +1468,7 @@
     zoomK = 1 + 7.5 * (inside * inside * (3 - 2 * inside));
 
     updateSkyCenter(now);
-
-    drawFigures();
-    drawStars();
-    drawBodies(now, t);
-    drawStarNames();
+    blitSky(now, t);
 
     labelBoxes.length = 0;
     var sLat = iss ? iss.solar_lat : 0;
@@ -1291,10 +1540,24 @@
 
   function cancelTour() { tour = null; tourDone = true; }
 
+  // Full rate while something is actually moving. Otherwise the only motion
+  // is the slow pulsing of the markers, which thirty frames a second carries
+  // just as well at half the work.
+  var IDLE_MS = 1000 / 30 - 2, lastDraw = 0;
+
+  function moving() {
+    return dragging || !!tour || inside !== insideTarget ||
+      Math.abs(parTarget - parY) > 0.05 ||
+      Math.abs(((tLon - lon0 + 540) % 360) - 180) > 0.05 || Math.abs(tLat - lat0) > 0.05;
+  }
+
   function frame(now) {
     raf = requestAnimationFrame(frame);
     if (!t0) t0 = now;
+    if (!moving() && now - lastDraw < IDLE_MS) return;
+    lastDraw = now;
     clock = (now - t0) / 1000;
+    issFromAnchors();
 
     // Ease the flip, and come back outside on its own after a while
     if (insideTarget === 1 && Date.now() - insideAt > STAY_INSIDE_MS) insideTarget = 0;
@@ -1398,6 +1661,9 @@
   function start() { if (running) return; running = true; t0 = 0; raf = requestAnimationFrame(frame); }
   function stop()  { running = false; cancelAnimationFrame(raf); }
   function updateRunning() {
+    if (shown.matches && timers.length) {
+      if (document.hidden) stopIss(); else startIss();
+    }
     if (reduceMotion.matches) return;
     if (!document.hidden && shown.matches) start(); else stop();
   }
@@ -1420,22 +1686,37 @@
     loadEvents();    every(loadEvents, 900000);
     loadVolcanoes(); every(loadVolcanoes, 3600000);
     loadKp();        every(loadKp, 600000);
-    // A quick second reading so the direction is settled within a couple of
-    // seconds rather than after a full refresh interval
-    timers.push(setTimeout(load, 1400));
-    timers.push(setTimeout(load, 3000));
-    timers.push(setTimeout(load, 5200));
     load().then(function () {
       resize();
       if (reduceMotion.matches) { draw(1); return; }
       updateRunning();
     });
-    every(load, REFRESH);
+    startIss();
   }
 
   function stopFeeds() {
     for (var i = 0; i < timers.length; i++) { clearInterval(timers[i]); clearTimeout(timers[i]); }
     timers.length = 0;
+    stopIss();
+  }
+
+  // The station. One live reading to start, then the anchors, which carry the
+  // position from there. Polling every few seconds only happens while they do
+  // not cover the present, for instance if the positions request failed. All
+  // of it stops while the tab is hidden and picks up again when it returns.
+  var issTimers = [];
+  function startIss() {
+    if (issTimers.length) return;
+    if (iss && anchorIndex(Date.now() / 1000) < 0) load();
+    issTimers.push(setTimeout(loadAnchors, 1200));
+    issTimers.push(setInterval(function () {
+      if (anchorIndex(Date.now() / 1000) < 0) load(); else setCaption();
+    }, REFRESH));
+    issTimers.push(setInterval(loadAnchors, ANCHOR_STEP * 1000));
+  }
+  function stopIss() {
+    for (var i = 0; i < issTimers.length; i++) { clearInterval(issTimers[i]); clearTimeout(issTimers[i]); }
+    issTimers.length = 0;
   }
 
   function updateScene() {
