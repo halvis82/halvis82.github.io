@@ -391,7 +391,9 @@
   }
 
   // Projection for the porthole: same stereographic math, but centered on the
-  // globe and scaled so the horizon lands exactly on its rim.
+  // globe and scaled so the horizon lands exactly on its rim. Seen from
+  // inside the sky like the backdrop, so looking up with north at the top,
+  // east is on the left, as it is lying on your back with your head north.
   var lx = 0, ly = 0, lScale = 1, zoomK = 1;
 
   function projLocal(ra, dec) {
@@ -400,7 +402,7 @@
     var cosc = Math.sin(d0) * Math.sin(d) + Math.cos(d0) * Math.cos(d) * Math.cos(dra);
     if (cosc < -0.2) return null;
     var k = lScale / (1 + cosc);
-    return [lx + k * Math.cos(d) * Math.sin(dra),
+    return [lx - k * Math.cos(d) * Math.sin(dra),
             ly - k * (Math.cos(d0) * Math.sin(d) - Math.sin(d0) * Math.cos(d) * Math.cos(dra))];
   }
 
@@ -848,8 +850,8 @@
     ctx.fillStyle = rgba(col.ink, 0.4);
     ctx.fillText('N', lx, ly - r + 12);
     ctx.fillText('S', lx, ly + r - 7);
-    ctx.textAlign = 'left';  ctx.fillText('E', lx + r - 12, ly + 3);
-    ctx.textAlign = 'right'; ctx.fillText('W', lx - r + 12, ly + 3);
+    ctx.textAlign = 'left';  ctx.fillText('W', lx + r - 12, ly + 3);
+    ctx.textAlign = 'right'; ctx.fillText('E', lx - r + 12, ly + 3);
     ctx.restore();
 
     // Rim, so it reads as a window rather than a hole
