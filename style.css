@@ -186,10 +186,6 @@ a {
   max-width: var(--wrap);
   margin: 0 auto;
   padding: clamp(2rem, 5vw, 3.2rem) 1.5rem clamp(1.6rem, 3vw, 2.2rem);
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 148px;
-  align-items: center;
-  gap: clamp(2rem, 7vw, 5rem);
 }
 
 .hero-copy {
@@ -197,22 +193,13 @@ a {
 }
 
 .hero-headshot {
-  width: 148px;
+  display: block;
+  width: 88px;
   aspect-ratio: 1;
   object-fit: cover;
   border: 1px solid var(--border);
   border-radius: 50%;
-}
-
-@media (max-width: 640px) {
-  .hero {
-    display: block;
-  }
-  .hero-headshot {
-    display: block;
-    width: 112px;
-    margin-top: 1.6rem;
-  }
+  margin-bottom: 1rem;
 }
 
 .eyebrow {
