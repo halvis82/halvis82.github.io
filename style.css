@@ -214,7 +214,7 @@ a {
   letter-spacing: .08em;
   text-transform: uppercase;
   color: var(--accent);
-  margin-bottom: .7rem;
+  margin: 1rem 0 0;
 }
 
 .hero h1 {
