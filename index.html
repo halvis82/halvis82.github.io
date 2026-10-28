@@ -98,8 +98,8 @@
         cross-disciplinary communication.
       </p>
       <p>
-        Away from work I read philosophy, play soccer, play chess, and get out
-        camping and hiking when I can, and I do my own mechanical work on cars
+        Away from work I read philosophy, play soccer, chess and guitar, get out
+        camping and hiking when I can, and do my own mechanical work on cars
         and motorcycles.
       </p>
       <ul class="facts">
@@ -315,6 +315,41 @@
           <img src="img/projects/car2.png" width="958" height="1194"
                loading="lazy" decoding="async" alt="">
         </div>
+      </li>
+
+      <li class="has-shot">
+        <div class="proj-main">
+          <div class="proj-head">
+            <h3>Plectrum</h3>
+            <a href="https://plectrum.vercel.app">Live site</a>
+          </div>
+          <p class="proj-at">Personal project</p>
+          <p>
+            Guitar chords and tabs for any song. Paste a link from YouTube,
+            Spotify, SoundCloud or most anywhere else, upload a file, or let it
+            listen to what's playing, and it works out the chords and a note by
+            note tab from the audio itself. The whole signal chain runs in the
+            browser on a Web Worker, so a song costs nothing to process. Audio
+            is turned into a constant-Q spectrogram, a port that matches
+            librosa's to within 0.02 mean log difference, and fed to a
+            bidirectional transformer chord model (BTC) and a CRNN guitar
+            transcription model, both exported to ONNX and run on WebGPU with a
+            multithreaded WebAssembly fallback. Beats come from a spectral flux
+            onset envelope, autocorrelation tempo and dynamic programming beat
+            tracking, and chord probabilities are Viterbi decoded onto the beat
+            grid with a pass that favors changes on downbeats. A CNN I trained on
+            GuitarSet and EGDB hears which string each note was played on from
+            its first 16 harmonics, right about nine times in ten, and a second
+            Viterbi pass over hand positions picks fingerings that keep the hand
+            still. It detects the key and lowered tunings, suggests a capo,
+            transposes, and plays the tab back in time with the song. Next.js on
+            Vercel, with every result saved to a public library.
+          </p>
+        </div>
+        <img class="proj-shot" src="img/projects/plectrum.webp" width="1600" height="1308"
+             loading="lazy" decoding="async"
+             alt="The Plectrum home page, with a box to paste a song link, upload a file or
+                  listen, above a library of songs already worked out with their key and tempo.">
       </li>
 
       <li class="has-shot">
