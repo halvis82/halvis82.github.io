@@ -218,7 +218,10 @@
         <div class="proj-main">
           <div class="proj-head">
             <h3>TabTerm</h3>
-            <a href="https://github.com/halvis82/TabTerm">Source</a>
+            <span class="proj-links">
+              <a href="https://chromewebstore.google.com/detail/tabterm/llpnnikkigahedhoedecpgjcnmfcgfen">Chrome Web Store</a>
+              <a href="https://github.com/halvis82/TabTerm">Source</a>
+            </span>
           </div>
           <p class="proj-at">Personal project</p>
           <p>
@@ -230,9 +233,16 @@
             reopening from history. That shape also leaves room for things a
             terminal window has nowhere to put, so there is a command launcher,
             search across everything you have ever run, saved commands scoped to
-            the project you are in, workspace templates, splits, and a live view
-            of the local servers you have going. Processes outliving their tabs
-            falls out of the daemon owning them, rather than being the point.
+            the project you are in, workspace templates, splits, a terminal in
+            Chrome's side panel next to any page, inline images, and a live view
+            of the local servers you have going. You can also watch, type into
+            and switch between all your terminals from a phone or another
+            computer, and get a notification on your phone when an agent like
+            Claude Code needs you. A device is paired by scanning a code and
+            approved on the Mac with Touch ID, traffic is end to end encrypted
+            through a relay you deploy on your own Cloudflare account, and keys
+            echo locally so typing feels instant. Processes outliving their tabs falls out of the daemon owning
+            them, rather than being the point.
             Written in TypeScript. A Node daemon runs the PTYs, keeps each
             screen's state in headless xterm.js and its sessions in SQLite, and
             talks to a Manifest V3 extension over an authenticated loopback
