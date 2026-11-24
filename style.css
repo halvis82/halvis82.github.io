@@ -444,6 +444,8 @@ a {
   font-size: .93rem;
   line-height: 1.55;
 }
+.edu-courses { margin-top: .75rem; }
+.edu-courses strong { color: var(--text); font-weight: 600; margin-right: .3rem; }
 .bullets > li::before {
   content: "";
   position: absolute;
